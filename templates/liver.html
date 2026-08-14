@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block title %}Liver Disease Prediction{% endblock %}
+{% block content %}
+<a href="/" class="back-btn mb-3">
+    <i class="fas fa-arrow-left"></i> Back
+</a>
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-body p-0">
+                <div style="background:linear-gradient(135deg,#064e3b,#059669);
+                     border-radius:16px 16px 0 0;padding:24px 28px;color:white;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div style="background:rgba(255,255,255,0.2);
+                             border-radius:12px;padding:12px;">
+                            <i class="fas fa-procedures fa-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold mb-0">
+                                Liver Disease Prediction
+                            </h4>
+                            <small class="opacity-75">
+                                Fill in your health details below
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <form action="/predict/liver" method="POST"
+                          onsubmit="showLoader()">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Age (years)</label>
+                                <input type="number" name="Age"
+                                       class="form-control"
+                                       placeholder="e.g. 45"
+                                       min="1" max="100" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Gender</label>
+                                <select name="Gender"
+                                        class="form-select" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="0">Female</option>
+                                    <option value="1">Male</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    BMI
+                                    <small class="text-muted">
+                                        (Body Mass Index)
+                                    </small>
+                                </label>
+                                <input type="number" step="0.01"
+                                       name="BMI" class="form-control"
+                                       placeholder="e.g. 25.5" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Alcohol Consumption
+                                    <small class="text-muted">
+                                        (units per week)
+                                    </small>
+                                </label>
+                                <input type="number" step="0.1"
+                                       name="AlcoholConsumption"
+                                       class="form-control"
+                                       placeholder="0 = None, 14+ = Heavy"
+                                       required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Do you Smoke?
+                                </label>
+                                <select name="Smoking"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="0">No</option>
+                                    <option value="1">Yes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Family History of Liver Disease?
+                                </label>
+                                <select name="GeneticRisk"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="0">No / Low Risk</option>
+                                    <option value="1">
+                                        Yes — Medium Risk
+                                    </option>
+                                    <option value="2">
+                                        Yes — High Risk
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Physical Activity
+                                    <small class="text-muted">
+                                        (hours per week)
+                                    </small>
+                                </label>
+                                <input type="number" step="0.1"
+                                       name="PhysicalActivity"
+                                       class="form-control"
+                                       placeholder="e.g. 3 (0 = None)"
+                                       required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Do you have Diabetes?
+                                </label>
+                                <select name="Diabetes"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="0">No</option>
+                                    <option value="1">Yes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Do you have Hypertension?
+                                </label>
+                                <select name="Hypertension"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="0">No</option>
+                                    <option value="1">Yes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Liver Function Test Score
+                                    <small class="text-muted">
+                                        (from blood test, normal: 7–56)
+                                    </small>
+                                </label>
+                                <input type="number" step="0.1"
+                                       name="LiverFunctionTest"
+                                       class="form-control"
+                                       placeholder="e.g. 35.0" required>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info py-2"
+                             style="font-size:0.85rem;border-radius:10px;">
+                            <i class="fas fa-info-circle me-2"></i>
+                            This uses your lifestyle, medical history
+                            and liver test score for prediction.
+                        </div>
+
+                        <div class="text-center mt-3">
+                            <button type="submit"
+                                    class="btn btn-success btn-lg px-5">
+                                <i class="fas fa-search me-2"></i>
+                                Predict Now
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

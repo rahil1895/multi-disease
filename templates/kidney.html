@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+{% block title %}Kidney Disease Prediction{% endblock %}
+{% block content %}
+<a href="/" class="back-btn mb-3">
+    <i class="fas fa-arrow-left"></i> Back
+</a>
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body p-0">
+                <div style="background:linear-gradient(135deg,#0c4a6e,#0284c7);
+                     border-radius:16px 16px 0 0;padding:24px 28px;color:white;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div style="background:rgba(255,255,255,0.2);
+                             border-radius:12px;padding:12px;">
+                            <i class="fas fa-kidneys fa-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold mb-0">
+                                Kidney Disease Prediction
+                            </h4>
+                            <small class="opacity-75">
+                                Fill in your clinical test results below
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <form action="/predict/kidney" method="POST"
+                          onsubmit="showLoader()">
+
+                        <!-- Hidden defaults for non-critical fields -->
+                        <input type="hidden" name="Pus_Cell_Clumps"
+                               value="notpresent">
+                        <input type="hidden" name="Bacteria"
+                               value="notpresent">
+                        <input type="hidden" name="Packed_Cell_Volume"
+                               value="40">
+                        <input type="hidden" name="WBC_Count"
+                               value="7500">
+                        <input type="hidden" name="RBC_Count"
+                               value="4.5">
+                        <input type="hidden" name="Coronary_Artery"
+                               value="no">
+                        <input type="hidden" name="eGFR" value="90">
+                        <input type="hidden" name="Urine_Protein"
+                               value="0.1">
+                        <input type="hidden" name="Urine_Output"
+                               value="1500">
+                        <input type="hidden" name="Serum_Albumin"
+                               value="4.0">
+                        <input type="hidden" name="Cholesterol"
+                               value="180">
+                        <input type="hidden" name="PTH_Level"
+                               value="40">
+                        <input type="hidden" name="Serum_Calcium"
+                               value="9.5">
+                        <input type="hidden" name="Serum_Phosphate"
+                               value="3.5">
+                        <input type="hidden" name="Diabetes_Duration"
+                               value="0">
+                        <input type="hidden" name="Hypertension_Duration"
+                               value="0">
+                        <input type="hidden" name="Cystatin_C"
+                               value="1.0">
+                        <input type="hidden" name="Urinary_Sediment"
+                               value="normal">
+                        <input type="hidden" name="CRP_Level" value="2">
+                        <input type="hidden" name="IL6_Level" value="5">
+                        <input type="hidden" name="Physical_Activity"
+                               value="moderate">
+                        <input type="hidden" name="Smoking" value="no">
+                        <input type="hidden" name="Family_History"
+                               value="no">
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Age</label>
+                                <input type="number" name="Age"
+                                       class="form-control"
+                                       placeholder="e.g. 45" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Blood Pressure (mm/Hg)
+                                </label>
+                                <input type="number" name="Blood_Pressure"
+                                       class="form-control"
+                                       placeholder="Normal: 80" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Specific Gravity of Urine
+                                </label>
+                                <select name="Specific_Gravity"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="1.005">
+                                        1.005 (Very dilute)
+                                    </option>
+                                    <option value="1.010">
+                                        1.010 (Dilute)
+                                    </option>
+                                    <option value="1.015" selected>
+                                        1.015 (Normal)
+                                    </option>
+                                    <option value="1.020">
+                                        1.020 (Concentrated)
+                                    </option>
+                                    <option value="1.025">
+                                        1.025 (Very concentrated)
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Albumin in Urine
+                                    <small class="text-muted">(0=None)</small>
+                                </label>
+                                <select name="Albumin"
+                                        class="form-select" required>
+                                    <option value="0">0 — None (Normal)</option>
+                                    <option value="1">1 — Trace</option>
+                                    <option value="2">2 — Mild</option>
+                                    <option value="3">3 — Moderate</option>
+                                    <option value="4">4 — High</option>
+                                    <option value="5">5 — Very High</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Sugar in Urine
+                                    <small class="text-muted">(0=None)</small>
+                                </label>
+                                <select name="Sugar"
+                                        class="form-select" required>
+                                    <option value="0">0 — None (Normal)</option>
+                                    <option value="1">1 — Trace</option>
+                                    <option value="2">2 — Mild</option>
+                                    <option value="3">3 — Moderate</option>
+                                    <option value="4">4 — High</option>
+                                    <option value="5">5 — Very High</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Red Blood Cells in Urine
+                                </label>
+                                <select name="Red_Blood_Cells"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="normal">Normal</option>
+                                    <option value="abnormal">Abnormal</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Pus Cells in Urine
+                                </label>
+                                <select name="Pus_Cells"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="normal">Normal</option>
+                                    <option value="abnormal">Abnormal</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Blood Glucose (mg/dl)
+                                </label>
+                                <input type="number" name="Blood_Glucose"
+                                       class="form-control"
+                                       placeholder="Normal: 70-140"
+                                       required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Blood Urea (mg/dl)
+                                </label>
+                                <input type="number" step="0.1"
+                                       name="Blood_Urea" class="form-control"
+                                       placeholder="Normal: 7-20" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Serum Creatinine (mg/dl)
+                                </label>
+                                <input type="number" step="0.1"
+                                       name="Serum_Creatinine"
+                                       class="form-control"
+                                       placeholder="Normal: 0.6-1.2"
+                                       required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Sodium (mEq/L)
+                                </label>
+                                <input type="number" step="0.1"
+                                       name="Sodium" class="form-control"
+                                       placeholder="Normal: 136-145"
+                                       required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Potassium (mEq/L)
+                                </label>
+                                <input type="number" step="0.1"
+                                       name="Potassium" class="form-control"
+                                       placeholder="Normal: 3.5-5.0"
+                                       required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Haemoglobin (gms)
+                                </label>
+                                <input type="number" step="0.1"
+                                       name="Haemoglobin" class="form-control"
+                                       placeholder="Normal: 12-17" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Do you have Hypertension?
+                                </label>
+                                <select name="Hypertension"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Do you have Diabetes?
+                                </label>
+                                <select name="Diabetes_Mellitus"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Appetite</label>
+                                <select name="Appetite"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="good">Good</option>
+                                    <option value="poor">Poor</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Swollen Feet (Pedal Edema)?
+                                </label>
+                                <select name="Pedal_Edema"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Anaemia?</label>
+                                <select name="Anaemia"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">BMI</label>
+                                <input type="number" step="0.1"
+                                       name="BMI" class="form-control"
+                                       placeholder="e.g. 25.5" required>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info py-2"
+                             style="font-size:0.85rem;border-radius:10px;">
+                            <i class="fas fa-info-circle me-2"></i>
+                            This uses your blood and urine test results
+                            along with medical history for prediction.
+                        </div>
+
+                        <div class="text-center mt-3">
+                            <button type="submit"
+                                    class="btn btn-info btn-lg px-5
+                                    text-white">
+                                <i class="fas fa-search me-2"></i>
+                                Predict Now
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

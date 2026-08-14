@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h3 class="fw-bold mb-4">
+    <i class="fas fa-chart-bar text-primary me-2"></i>Dashboard
+</h3>
+
+<!-- Stats -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card p-3 text-center">
+            <div class="text-muted small">Total Predictions</div>
+            <div class="fw-bold fs-2 text-primary">{{ counts.total }}</div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card p-3 text-center" style="border-left:4px solid #E63757">
+            <div class="text-muted small">Heart</div>
+            <div class="fw-bold fs-2 text-danger">{{ counts.heart }}</div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card p-3 text-center" style="border-left:4px solid #F6C343">
+            <div class="text-muted small">Diabetes</div>
+            <div class="fw-bold fs-2 text-warning">{{ counts.diabetes }}</div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card p-3 text-center" style="border-left:4px solid #00D97E">
+            <div class="text-muted small">Liver</div>
+            <div class="fw-bold fs-2 text-success">{{ counts.liver }}</div>
+        </div>
+    </div>
+</div>
+
+<!-- SHAP Charts -->
+<div class="row mb-4">
+    <div class="col-12 mb-3">
+        <h5 class="fw-bold">
+            <i class="fas fa-chart-bar text-primary me-2"></i>
+            SHAP Feature Importance Charts
+        </h5>
+    </div>
+    {% for disease in ['heart', 'diabetes', 'liver', 'kidney'] %}
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                {{ disease.title() }} Disease — SHAP
+            </div>
+            <div class="card-body text-center">
+                <img src="/static/images/shap/{{ disease }}_shap_bar.png"
+                     class="img-fluid rounded" alt="{{ disease }} SHAP">
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Recent Predictions -->
+<div class="card">
+    <div class="card-header bg-dark text-white p-3">
+        <h5 class="mb-0">
+            <i class="fas fa-history me-2"></i>Recent Predictions
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Disease</th>
+                        <th>Prediction</th>
+                        <th>Confidence</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in records %}
+                    <tr>
+                        <td>
+                            <span class="badge
+                                {% if r.disease == 'heart' %}bg-danger
+                                {% elif r.disease == 'diabetes' %}bg-warning text-dark
+                                {% elif r.disease == 'liver' %}bg-success
+                                {% else %}bg-info{% endif %}">
+                                {{ r.disease.title() }}
+                            </span>
+                        </td>
+                        <td>{{ r.prediction }}</td>
+                        <td>{{ r.confidence }}%</td>
+                        <td>{{ r.timestamp }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">
+                            No predictions yet
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XAI Healthcare — {% block title %}{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f0f4f8; min-height: 100vh; }
+
+        /* ── NAVBAR ── */
+        .navbar {
+            background: linear-gradient(135deg, #0f2444 0%, #1a56db 100%);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+            padding: 12px 0;
+        }
+        .navbar-brand { color: white !important; font-weight: 700; }
+        .nav-link {
+            color: rgba(255,255,255,0.85) !important;
+            font-weight: 500;
+            padding: 8px 16px !important;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .nav-link:hover {
+            color: white !important;
+            background: rgba(255,255,255,0.15);
+        }
+        .nav-link.active {
+            color: white !important;
+            background: rgba(255,255,255,0.2);
+        }
+        .dropdown-menu {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            padding: 8px;
+            min-width: 200px;
+        }
+        .dropdown-item {
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-weight: 500;
+            transition: background 0.15s;
+        }
+        .dropdown-item:hover { background: #f0f4f8; }
+
+        /* ── CARDS ── */
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+            background: white;
+        }
+
+        /* ── BUTTONS ── */
+        .btn {
+            border-radius: 10px;
+            font-weight: 600;
+            padding: 10px 20px;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #1a56db;
+            border: none;
+        }
+        .btn-primary:hover {
+            background: #1447c4;
+            transform: translateY(-1px);
+        }
+        .btn-outline-primary {
+            border: 1.5px solid #1a56db;
+            color: #1a56db;
+        }
+        .btn-outline-primary:hover {
+            background: #1a56db;
+            color: white;
+            transform: translateY(-1px);
+        }
+        .btn-outline-secondary:hover { transform: translateY(-1px); }
+        .btn-outline-dark:hover      { transform: translateY(-1px); }
+
+        /* ── FORMS ── */
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 1.5px solid #e2e8f0;
+            padding: 10px 14px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #1a56db;
+            box-shadow: 0 0 0 3px rgba(26,86,219,0.1);
+        }
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+        }
+
+        /* ── BACK BUTTON ── */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 8px 16px;
+            color: #374151;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            margin-bottom: 16px;
+            transition: all 0.2s;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .back-btn:hover {
+            border-color: #1a56db;
+            color: #1a56db;
+            transform: translateX(-2px);
+        }
+
+        /* ── SECTION LABEL ── */
+        .section-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #6b7280;
+            margin-bottom: 14px;
+        }
+
+        /* ── LOADER ── */
+        .loader {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(15,36,68,0.8);
+            backdrop-filter: blur(6px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .loader.active { display: flex; }
+        .loader-card {
+            background: white;
+            border-radius: 20px;
+            padding: 44px 56px;
+            text-align: center;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+            max-width: 360px;
+            width: 90%;
+        }
+        .loader-spinner {
+            width: 64px; height: 64px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #1a56db;
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+            margin: 0 auto 20px;
+        }
+        .loader-pulse {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 16px;
+        }
+        .loader-pulse span {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #1a56db;
+            animation: pulse 1.2s ease-in-out infinite;
+        }
+        .loader-pulse span:nth-child(2) { animation-delay: 0.2s; }
+        .loader-pulse span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes spin {
+            0%   { transform: rotate(0deg);   }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes pulse {
+            0%, 80%, 100% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            40% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            background: linear-gradient(135deg, #0f2444, #1a3a6b);
+            color: rgba(255,255,255,0.7);
+            padding: 32px 0;
+            margin-top: 60px;
+        }
+        .footer-divider {
+            border-color: rgba(255,255,255,0.1);
+            margin: 16px 0;
+        }
+
+        /* ── ALERTS ── */
+        .alert { border-radius: 10px; border: none; }
+        .alert-info { background: #eff6ff; color: #1e40af; }
+
+        /* ── TABLES ── */
+        .table { border-radius: 12px; overflow: hidden; }
+        .table th {
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── PROGRESS ── */
+        .progress { border-radius: 20px; overflow: hidden; }
+
+        /* ── SCROLLBAR ── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track  { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb  {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* ── PAGE FADE IN ── */
+        .container {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0);   }
+        }
+
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- LOADER                                         -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="loader" id="loader">
+    <div class="loader-card">
+        <div class="loader-spinner"></div>
+        <h5 class="fw-bold text-dark mb-1">
+            Analyzing Your Health Data
+        </h5>
+        <p class="text-muted mb-0" style="font-size:0.9rem;">
+            AI is running predictions and generating
+            SHAP &amp; LIME explanations for you...
+        </p>
+        <div class="loader-pulse">
+            <span></span><span></span><span></span>
+        </div>
+        <div class="mt-3">
+            <small class="text-muted">
+                This may take 15–30 seconds
+            </small>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- NAVBAR                                         -->
+<!-- ══════════════════════════════════════════════ -->
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <div class="container">
+
+        <!-- Brand -->
+        <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+            <div style="background:rgba(255,255,255,0.15);
+                 border-radius:10px;padding:8px 11px;line-height:1;">
+                <i class="fas fa-heartbeat" style="font-size:1rem;"></i>
+            </div>
+            <div>
+                <div style="font-size:1rem;font-weight:700;
+                     line-height:1.2;letter-spacing:-0.3px;">
+                    XAI Healthcare
+                </div>
+                <div style="font-size:0.62rem;opacity:0.65;
+                     font-weight:400;letter-spacing:0.3px;">
+                    AI-Powered Disease Prediction
+                </div>
+            </div>
+        </a>
+
+        <!-- Toggler -->
+        <button class="navbar-toggler border-0" type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav"
+                aria-controls="navbarNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Nav Links -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center gap-1">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/">
+                        <i class="fas fa-home me-1"
+                           style="font-size:0.85rem;"></i>Home
+                    </a>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        <i class="fas fa-stethoscope me-1"
+                           style="font-size:0.85rem;"></i>
+                        Predict Disease
+                    </a>
+                    <ul class="dropdown-menu shadow-lg">
+                        <li>
+                            <span class="dropdown-header text-muted"
+                                  style="font-size:0.72rem;
+                                  font-weight:700;
+                                  text-transform:uppercase;
+                                  letter-spacing:0.8px;
+                                  padding:8px 14px 4px;">
+                                Select Disease
+                            </span>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/heart">
+                                <i class="fas fa-heart text-danger me-2"
+                                   style="width:16px;"></i>
+                                Heart Disease
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/diabetes">
+                                <i class="fas fa-tint text-warning me-2"
+                                   style="width:16px;"></i>
+                                Diabetes
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/liver">
+                                <i class="fas fa-procedures text-success me-2"
+                                   style="width:16px;"></i>
+                                Liver Disease
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/kidney">
+                                <i class="fas fa-kidneys text-info me-2"
+                                   style="width:16px;"></i>
+                                Kidney Disease
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/dashboard">
+                        <i class="fas fa-chart-bar me-1"
+                           style="font-size:0.85rem;"></i>
+                        Dashboard
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/history">
+                        <i class="fas fa-history me-1"
+                           style="font-size:0.85rem;"></i>
+                        History
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- MAIN CONTENT                                   -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="container mt-4 mb-5">
+    {% block content %}{% endblock %}
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- FOOTER                                         -->
+<!-- ══════════════════════════════════════════════ -->
+<footer>
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center text-md-start
+                         mb-3 mb-md-0">
+                <div class="d-flex align-items-center
+                     justify-content-center
+                     justify-content-md-start gap-2 mb-1">
+                    <i class="fas fa-heartbeat text-danger"></i>
+                    <strong class="text-white"
+                            style="font-size:0.95rem;">
+                        XAI Healthcare
+                    </strong>
+                </div>
+                <div style="font-size:0.82rem;">
+                    Explainable AI-Based Multi-Disease
+                    Prediction System in Healthcare
+                </div>
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+                <div style="font-size:0.82rem;margin-bottom:4px;">
+                    <i class="fas fa-microchip me-1 opacity-50"></i>
+                    XGBoost &nbsp;·&nbsp; Random Forest
+                    &nbsp;·&nbsp; SHAP &nbsp;·&nbsp; LIME
+                </div>
+                <div style="font-size:0.8rem;opacity:0.6;">
+                    Group G22 &nbsp;|&nbsp;
+                    Raouf Manhas &nbsp;·&nbsp;
+                    Sahil Shaikh &nbsp;·&nbsp;
+                    Tejas S P &nbsp;·&nbsp;
+                    Vikas M
+                </div>
+                <div style="font-size:0.75rem;opacity:0.5;
+                     margin-top:4px;">
+                    Guide: Prof. Veena B &nbsp;|&nbsp;
+                    Global Academy of Technology, Bengaluru
+                </div>
+            </div>
+        </div>
+        <hr class="footer-divider">
+        <div class="text-center"
+             style="font-size:0.75rem;opacity:0.45;">
+            This system is for educational and research purposes only.
+            Always consult a qualified medical professional for
+            health decisions.
+        </div>
+    </div>
+</footer>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SCRIPTS                                        -->
+<!-- ══════════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const loader = document.getElementById('loader');
+
+    // ── Always hide loader immediately on page load ──
+    function hideLoader() {
+        if (loader) {
+            loader.classList.remove('active');
+            loader.style.display = 'none';
+        }
+    }
+
+    // Hide loader right away when script runs
+    hideLoader();
+
+    // Hide on every possible navigation/load event
+    window.addEventListener('load',     hideLoader);
+    window.addEventListener('pageshow', hideLoader);
+    window.addEventListener('popstate', hideLoader);
+    document.addEventListener('DOMContentLoaded', hideLoader);
+
+    // ── Handle bfcache (browser back/forward cache) ──
+    // This is the key fix for the back button issue
+    window.addEventListener('pageshow', function(e) {
+        if (e.persisted) {
+            // Page restored from bfcache (back button pressed)
+            hideLoader();
+        }
+    });
+
+    // ── Show loader only when form is submitted ──
+    function showLoader() {
+        if (loader) {
+            loader.style.display = 'flex';
+            loader.classList.add('active');
+            // Safety auto-hide after 90 seconds
+            setTimeout(hideLoader, 90000);
+        }
+    }
+
+    // ── Highlight active nav link ──
+    document.addEventListener('DOMContentLoaded', function() {
+        const path = window.location.pathname;
+        document.querySelectorAll('.nav-link').forEach(function(link) {
+            const href = link.getAttribute('href');
+            if (href && href === path) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

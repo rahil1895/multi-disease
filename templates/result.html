@@ -1,0 +1,523 @@
+{% extends "base.html" %}
+{% block title %}Prediction Result{% endblock %}
+
+{% block extra_css %}
+<style>
+    .result-hero {
+        border-radius: 20px;
+        padding: 36px 40px;
+        color: white;
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+    }
+    .result-hero.hero-safe {
+        background: linear-gradient(135deg, #064e3b, #059669);
+    }
+    .result-hero.hero-warning {
+        background: linear-gradient(135deg, #78350f, #d97706);
+    }
+    .result-hero.hero-danger {
+        background: linear-gradient(135deg, #7f1d1d, #dc2626);
+    }
+    .result-hero::after {
+        content: '';
+        position: absolute;
+        top: -40px; right: -40px;
+        width: 200px; height: 200px;
+        background: rgba(255,255,255,0.06);
+        border-radius: 50%;
+    }
+    .confidence-circle {
+        width: 110px; height: 110px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.15);
+        border: 3px solid rgba(255,255,255,0.4);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
+    }
+    .risk-item {
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .risk-item.danger {
+        background: #fff5f5;
+        border-left: 4px solid #dc2626;
+    }
+    .risk-item.warning {
+        background: #fffbeb;
+        border-left: 4px solid #d97706;
+    }
+    .risk-item.safe {
+        background: #f0fdf4;
+        border-left: 4px solid #059669;
+    }
+    .risk-icon {
+        width: 28px; height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+    .advice-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 12px 14px;
+        background: #f8faff;
+        border-radius: 10px;
+        margin-bottom: 8px;
+        border: 1px solid #e8eeff;
+    }
+    .advice-num {
+        width: 26px; height: 26px;
+        border-radius: 50%;
+        background: #1a56db;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+    .data-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+    .data-item {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 10px 12px;
+        border: 1px solid #f0f0f0;
+    }
+    .section-header {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #6b7280;
+        margin-bottom: 14px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #f3f4f6;
+    }
+    .confidence-bar-wrap {
+        background: rgba(255,255,255,0.2);
+        border-radius: 20px;
+        height: 8px;
+        margin-top: 6px;
+    }
+    .confidence-bar-fill {
+        height: 8px;
+        border-radius: 20px;
+        background: rgba(255,255,255,0.9);
+    }
+    .advanced-toggle {
+        background: white;
+        border: 1.5px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 16px 20px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .advanced-toggle:hover {
+        border-color: #1a56db;
+        background: #f8faff;
+    }
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: white;
+        border: 1.5px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 8px 16px;
+        color: #374151;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-decoration: none;
+        margin-bottom: 20px;
+        transition: all 0.2s;
+    }
+    .back-btn:hover {
+        border-color: #1a56db;
+        color: #1a56db;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Back Button -->
+<a href="javascript:history.back()" class="back-btn">
+    <i class="fas fa-arrow-left"></i> Back
+</a>
+
+<div class="row justify-content-center">
+<div class="col-lg-10">
+
+<!-- ══════════════════════════════════ -->
+<!-- HERO RESULT                       -->
+<!-- ══════════════════════════════════ -->
+<div class="result-hero
+    {% if 'No Disease' in label or 'No Diabetes' in label %}hero-safe
+    {% elif 'Severe' in label or 'High Risk' in label %}hero-danger
+    {% else %}hero-warning{% endif %}">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <div class="mb-2 d-flex gap-2 flex-wrap">
+                <span class="badge"
+                      style="background:rgba(255,255,255,0.2);
+                             font-size:0.8rem;padding:6px 12px;
+                             border-radius:20px;">
+                    {{ disease }}
+                </span>
+                <span class="badge"
+                      style="background:rgba(255,255,255,0.9);
+                             color:{% if 'No Disease' in label or 'No Diabetes' in label %}#059669
+                             {% elif 'Severe' in label or 'High Risk' in label %}#dc2626
+                             {% else %}#d97706{% endif %};
+                             font-size:0.8rem;padding:6px 12px;
+                             border-radius:20px;">
+                    {% if 'No Disease' in label or 'No Diabetes' in label %}
+                        ✓ All Clear
+                    {% elif 'Severe' in label %}
+                        ⚠ Critical
+                    {% elif 'High Risk' in label %}
+                        ⚠ High Risk
+                    {% else %}
+                        ⚠ At Risk
+                    {% endif %}
+                </span>
+            </div>
+            <h1 class="fw-bold mb-2" style="font-size:2rem;">
+                {% if 'No Disease' in label or 'No Diabetes' in label %}
+                    You're Looking Healthy! 🎉
+                {% elif 'Severe' in label %}
+                    Severe Disease Detected
+                {% else %}
+                    {{ label }}
+                {% endif %}
+            </h1>
+            <p class="mb-3 opacity-80" style="font-size:0.95rem;">
+                {% if 'No Disease' in label or 'No Diabetes' in label %}
+                    Our AI analyzed your {{ features|length }} health parameters
+                    and found no significant signs of {{ disease }}.
+                {% else %}
+                    Our AI detected indicators suggesting {{ label }} based on
+                    your {{ features|length }} health parameters.
+                    Please consult a doctor for confirmation.
+                {% endif %}
+            </p>
+            <!-- Confidence Bar -->
+            <div style="font-size:0.85rem;opacity:0.85;">
+                AI Confidence: <strong>{{ confidence }}%</strong>
+                — {% if confidence >= 85 %}Very High Confidence
+                {% elif confidence >= 70 %}Good Confidence
+                {% elif confidence >= 55 %}Moderate Confidence
+                {% else %}Low Confidence — Please consult a doctor
+                {% endif %}
+            </div>
+            <div class="confidence-bar-wrap mt-2" style="max-width:300px;">
+                <div class="confidence-bar-fill"
+                     style="width:{{ confidence }}%"></div>
+            </div>
+            <div style="font-size:0.75rem;opacity:0.7;margin-top:4px;">
+                The higher the confidence, the more accurate the prediction
+            </div>
+        </div>
+        <div class="col-md-4 text-center mt-4 mt-md-0">
+            <div class="confidence-circle mx-auto">
+                <div style="font-size:1.8rem;font-weight:800;">
+                    {{ confidence }}%
+                </div>
+                <div style="font-size:0.7rem;opacity:0.8;">
+                    AI Confidence
+                </div>
+            </div>
+            <div style="font-size:0.8rem;opacity:0.7;margin-top:8px;">
+                Based on {{ features|length }} parameters
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════ -->
+<!-- MAIN GRID                         -->
+<!-- ══════════════════════════════════ -->
+<div class="row">
+
+    <!-- LEFT -->
+    <div class="col-lg-7 mb-4">
+
+        <!-- RISK / HEALTH STATUS -->
+        <div class="card p-4 mb-4">
+            {% if 'No Disease' in label or 'No Diabetes' in label %}
+
+                <div class="section-header">
+                    <i class="fas fa-shield-alt text-success me-1"></i>
+                    Your Health Status
+                </div>
+                <div class="risk-item safe">
+                    <div class="risk-icon"
+                         style="background:#dcfce7;">
+                        <i class="fas fa-check text-success"
+                           style="font-size:0.75rem;"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold text-success">
+                            No {{ disease }} detected
+                        </div>
+                        <div class="text-muted"
+                             style="font-size:0.85rem;">
+                            Your health indicators are within acceptable ranges
+                        </div>
+                    </div>
+                </div>
+
+                {% if reasons_risk %}
+                <div class="section-header mt-3">
+                    <i class="fas fa-exclamation-triangle
+                       text-warning me-1"></i>
+                    Things to Watch Out For
+                </div>
+                <p class="text-muted mb-3" style="font-size:0.85rem;">
+                    You are healthy now, but improving these factors
+                    will reduce your future risk:
+                </p>
+                {% for reason in reasons_risk %}
+                <div class="risk-item warning">
+                    <div class="risk-icon"
+                         style="background:#fef3c7;">
+                        <i class="fas fa-exclamation text-warning"
+                           style="font-size:0.75rem;"></i>
+                    </div>
+                    <div style="font-size:0.9rem;">{{ reason }}</div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="risk-item safe mt-3">
+                    <div class="risk-icon"
+                         style="background:#dcfce7;">
+                        <i class="fas fa-thumbs-up text-success"
+                           style="font-size:0.75rem;"></i>
+                    </div>
+                    <div style="font-size:0.9rem;">
+                        All your health parameters look good!
+                        Keep maintaining your healthy lifestyle.
+                    </div>
+                </div>
+                {% endif %}
+
+            {% else %}
+
+                <div class="section-header">
+                    <i class="fas fa-exclamation-triangle
+                       text-danger me-1"></i>
+                    Why was {{ label }} detected?
+                </div>
+                <p class="text-muted mb-3" style="font-size:0.85rem;">
+                    These specific factors in your health data
+                    contributed to this prediction:
+                </p>
+                {% if reasons_risk %}
+                    {% for reason in reasons_risk %}
+                    <div class="risk-item danger">
+                        <div class="risk-icon"
+                             style="background:#fee2e2;">
+                            <i class="fas fa-times text-danger"
+                               style="font-size:0.75rem;"></i>
+                        </div>
+                        <div style="font-size:0.9rem;
+                             font-weight:500;">{{ reason }}</div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="risk-item warning">
+                    <div class="risk-icon"
+                         style="background:#fef3c7;">
+                        <i class="fas fa-info text-warning"
+                           style="font-size:0.75rem;"></i>
+                    </div>
+                    <div style="font-size:0.9rem;">
+                        Multiple health factors combined are indicating
+                        risk. Please consult a doctor for detailed analysis.
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if reasons_good %}
+                <div class="section-header mt-3">
+                    <i class="fas fa-check-circle
+                       text-success me-1"></i>
+                    Positive Factors in Your Health
+                </div>
+                {% for reason in reasons_good %}
+                <div class="risk-item safe">
+                    <div class="risk-icon"
+                         style="background:#dcfce7;">
+                        <i class="fas fa-check text-success"
+                           style="font-size:0.75rem;"></i>
+                    </div>
+                    <div style="font-size:0.9rem;">{{ reason }}</div>
+                </div>
+                {% endfor %}
+                {% endif %}
+
+            {% endif %}
+        </div>
+
+        <!-- PATIENT DATA -->
+        <div class="card p-4">
+            <div class="section-header">
+                <i class="fas fa-clipboard-list me-1"></i>
+                Your Entered Health Data
+            </div>
+            <div class="data-grid">
+                {% for i in range(features|length) %}
+                <div class="data-item">
+                    <div class="text-muted"
+                         style="font-size:0.72rem;margin-bottom:2px;">
+                        {{ human_names.get(features[i], features[i]) }}
+                    </div>
+                    <div class="fw-bold"
+                         style="font-size:0.95rem;">
+                        {{ instance[i] }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="col-lg-5 mb-4">
+
+        <!-- WHAT TO DO -->
+        <div class="card p-4 mb-4">
+            <div class="section-header">
+                <i class="fas fa-stethoscope me-1"></i>
+                What Should You Do Next?
+            </div>
+            {% for tip in advice %}
+            <div class="advice-item">
+                <div class="advice-num">{{ loop.index }}</div>
+                <div style="font-size:0.9rem;">{{ tip }}</div>
+            </div>
+            {% endfor %}
+            <div style="background:#fffbeb;border-radius:10px;
+                 padding:12px 14px;margin-top:12px;
+                 border:1px solid #fde68a;">
+                <div class="d-flex gap-2">
+                    <i class="fas fa-info-circle text-warning mt-1"
+                       style="flex-shrink:0;"></i>
+                    <small class="text-muted">
+                        <strong>Medical Disclaimer:</strong>
+                        This AI tool is for informational purposes only.
+                        Always consult a qualified doctor before making
+                        any medical decisions.
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="card p-4">
+            <div class="section-header">
+                <i class="fas fa-bolt me-1"></i>Quick Actions
+            </div>
+            <div class="d-grid gap-2">
+                <a href="javascript:history.back()"
+                   class="btn btn-primary">
+                    <i class="fas fa-redo me-2"></i>
+                    Check Again with New Data
+                </a>
+                <a href="/" class="btn btn-outline-primary">
+                    <i class="fas fa-home me-2"></i>
+                    Check Another Disease
+                </a>
+                <a href="/history"
+                   class="btn btn-outline-secondary">
+                    <i class="fas fa-history me-2"></i>
+                    View Past Predictions
+                </a>
+                <button onclick="window.print()"
+                        class="btn btn-outline-dark">
+                    <i class="fas fa-print me-2"></i>
+                    Print / Save Result
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ══════════════════════════════════ -->
+<!-- ADVANCED AI — Collapsible         -->
+<!-- ══════════════════════════════════ -->
+<div class="advanced-toggle mb-3"
+     data-bs-toggle="collapse"
+     data-bs-target="#advancedAI">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <i class="fas fa-brain text-primary me-2"></i>
+            <strong>Advanced AI Explanation</strong>
+            <span class="text-muted ms-2"
+                  style="font-size:0.85rem;">
+                (For doctors & technical users)
+            </span>
+        </div>
+        <i class="fas fa-chevron-down text-muted"></i>
+    </div>
+</div>
+<div class="collapse mb-4" id="advancedAI">
+    <div class="card p-4">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div class="section-header">
+                    <i class="fas fa-chart-bar me-1"></i>
+                    SHAP — Global Feature Importance
+                </div>
+                <p class="text-muted mb-3"
+                   style="font-size:0.85rem;">
+                    Which health parameters had the most influence
+                    on the prediction overall.
+                </p>
+                <img src="data:image/png;base64,{{ shap_chart }}"
+                     class="img-fluid rounded"
+                     style="border:1px solid #f0f0f0;"
+                     alt="SHAP Chart">
+            </div>
+            <div class="col-md-6">
+                <div class="section-header">
+                    <i class="fas fa-microscope me-1"></i>
+                    LIME — Patient-Level Explanation
+                </div>
+                <p class="text-muted mb-3"
+                   style="font-size:0.85rem;">
+                    Why the AI made this specific prediction
+                    for your particular data.
+                </p>
+                <img src="data:image/png;base64,{{ lime_chart }}"
+                     class="img-fluid rounded"
+                     style="border:1px solid #f0f0f0;"
+                     alt="LIME Chart">
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+</div>
+{% endblock %}

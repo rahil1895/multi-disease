@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #0f2444 0%, #1a56db 100%);
+        border-radius: 20px;
+        padding: 50px 40px;
+        color: white;
+        margin-bottom: 32px;
+        position: relative;
+        overflow: hidden;
+    }
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: -50px; right: -50px;
+        width: 300px; height: 300px;
+        background: rgba(255,255,255,0.05);
+        border-radius: 50%;
+    }
+    .disease-card {
+        border-radius: 16px;
+        padding: 28px 20px;
+        text-align: center;
+        transition: transform 0.2s, box-shadow 0.2s;
+        cursor: pointer;
+        text-decoration: none;
+        display: block;
+        color: inherit;
+    }
+    .disease-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.12) !important;
+        color: inherit;
+    }
+    .disease-icon {
+        width: 80px; height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+    }
+    .feature-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 16px;
+        background: #f8faff;
+        border-radius: 12px;
+        margin-bottom: 12px;
+    }
+    .feature-icon {
+        width: 40px; height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<div class="hero-section">
+    <div class="row align-items-center">
+        <div class="col-lg-8">
+            <div class="mb-3">
+                <span class="badge bg-white bg-opacity-20 text-white px-3 py-2"
+                      style="border-radius:20px;font-size:0.8rem;">
+                    <i class="fas fa-brain me-1"></i>
+                    Powered by XGBoost + Random Forest + SHAP + LIME
+                </span>
+            </div>
+            <h1 class="fw-bold mb-3" style="font-size:2.2rem;line-height:1.3;">
+                AI-Powered Multi-Disease<br>Prediction System
+            </h1>
+            <p class="mb-4 opacity-75" style="font-size:1.05rem;">
+                Get instant predictions for Heart Disease, Diabetes,
+                Liver Disease and Kidney Disease — with clear explanations
+                in plain English.
+            </p>
+            <a href="#diseases"
+               class="btn me-3"
+               style="background:white;color:#1a56db;font-weight:700;
+                      border-radius:10px;padding:12px 28px;">
+                <i class="fas fa-play me-2"></i>Start Prediction
+            </a>
+            <a href="/dashboard" class="btn"
+               style="background:rgba(255,255,255,0.15);color:white;
+                      border:1px solid rgba(255,255,255,0.3);
+                      border-radius:10px;padding:12px 28px;">
+                <i class="fas fa-chart-bar me-2"></i>View Dashboard
+            </a>
+        </div>
+        <div class="col-lg-4 text-center mt-4 mt-lg-0"
+             style="font-size:6rem;opacity:0.25;">🏥</div>
+    </div>
+</div>
+
+<!-- Disease Cards -->
+<div class="section-label" id="diseases">
+    Select a Disease to Predict
+</div>
+<div class="row mb-4">
+    <div class="col-6 col-md-3 mb-3">
+        <a href="/heart" class="card disease-card">
+            <div class="disease-icon" style="background:#fff0f3;">
+                <i class="fas fa-heart text-danger fa-2x"></i>
+            </div>
+            <h6 class="fw-bold mb-1">Heart Disease</h6>
+            <p class="text-muted mb-0" style="font-size:0.82rem;">
+                Cardiovascular risk prediction
+            </p>
+        </a>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+        <a href="/diabetes" class="card disease-card">
+            <div class="disease-icon" style="background:#fffbf0;">
+                <i class="fas fa-tint text-warning fa-2x"></i>
+            </div>
+            <h6 class="fw-bold mb-1">Diabetes</h6>
+            <p class="text-muted mb-0" style="font-size:0.82rem;">
+                Blood sugar level analysis
+            </p>
+        </a>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+        <a href="/liver" class="card disease-card">
+            <div class="disease-icon" style="background:#f0fff8;">
+                <i class="fas fa-procedures text-success fa-2x"></i>
+            </div>
+            <h6 class="fw-bold mb-1">Liver Disease</h6>
+            <p class="text-muted mb-0" style="font-size:0.82rem;">
+                Liver health assessment
+            </p>
+        </a>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+        <a href="/kidney" class="card disease-card">
+            <div class="disease-icon" style="background:#f0fbff;">
+                <i class="fas fa-kidneys text-info fa-2x"></i>
+            </div>
+            <h6 class="fw-bold mb-1">Kidney Disease</h6>
+            <p class="text-muted mb-0" style="font-size:0.82rem;">
+                Kidney function evaluation
+            </p>
+        </a>
+    </div>
+</div>
+
+<!-- Features -->
+<div class="section-label">Why Use This System?</div>
+<div class="row">
+    <div class="col-md-4 mb-3">
+        <div class="card p-4">
+            <div class="feature-item">
+                <div class="feature-icon" style="background:#eef2ff;">
+                    <i class="fas fa-brain text-primary"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1">Explainable AI</h6>
+                    <small class="text-muted">
+                        Every prediction comes with plain English reasons —
+                        no confusing medical jargon
+                    </small>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon" style="background:#f0fff8;">
+                    <i class="fas fa-database text-success"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1">Real Patient Data</h6>
+                    <small class="text-muted">
+                        Trained on 374,000+ real clinical records
+                        from verified medical datasets
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card p-4">
+            <div class="feature-item">
+                <div class="feature-icon" style="background:#fffbf0;">
+                    <i class="fas fa-shield-alt text-warning"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1">4 Diseases Covered</h6>
+                    <small class="text-muted">
+                        Heart, Diabetes, Liver and Kidney disease
+                        all in one unified platform
+                    </small>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon" style="background:#fff0f3;">
+                    <i class="fas fa-bolt text-danger"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1">Instant Results</h6>
+                    <small class="text-muted">
+                        Get prediction with detailed explanations
+                        in under 30 seconds
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card p-4">
+            <div class="feature-item">
+                <div class="feature-icon" style="background:#f0fbff;">
+                    <i class="fas fa-history text-info"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1">Prediction History</h6>
+                    <small class="text-muted">
+                        All predictions saved securely in cloud
+                        database for future reference
+                    </small>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon" style="background:#f5f0ff;">
+                    <i class="fas fa-user-md" style="color:#7c3aed;"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1">Doctor Friendly</h6>
+                    <small class="text-muted">
+                        Advanced SHAP & LIME charts available
+                        for medical professionals
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
