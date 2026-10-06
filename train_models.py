@@ -52,21 +52,30 @@ def train_heart():
 # ============================================================
 def train_diabetes():
     print("Training Diabetes models...")
-    X_train, X_test, y_train, y_test = joblib.load('models/diabetes/diabetes_data.pkl')
+    X_train, X_test, y_train, y_test = joblib.load(
+        'models/diabetes/diabetes_data.pkl')
 
     # Random Forest
-    rf = RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1)
+    rf = RandomForestClassifier(
+        n_estimators=100, random_state=42, n_jobs=-1)
     rf.fit(X_train, y_train)
     joblib.dump(rf, 'models/diabetes/diabetes_rf.pkl')
 
     # XGBoost
-    xgb = XGBClassifier(n_estimators=100, random_state=42, eval_metric='mlogloss')
+    xgb = XGBClassifier(
+        n_estimators=100, random_state=42,
+        eval_metric='logloss')
     xgb.fit(X_train, y_train)
     joblib.dump(xgb, 'models/diabetes/diabetes_xgb.pkl')
 
     print("  Results:")
-    rf_scores  = evaluate_model("Random Forest", rf, X_test, y_test, multi_class=True)
-    xgb_scores = evaluate_model("XGBoost      ", xgb, X_test, y_test, multi_class=True)
+    # Binary class now — not multi_class
+    rf_scores  = evaluate_model(
+        "Random Forest", rf, X_test, y_test,
+        multi_class=False)
+    xgb_scores = evaluate_model(
+        "XGBoost      ", xgb, X_test, y_test,
+        multi_class=False)
     print(f"✅ Diabetes models saved!\n")
     return rf_scores, xgb_scores
 
@@ -75,22 +84,34 @@ def train_diabetes():
 # ============================================================
 def train_liver():
     print("Training Liver Disease models...")
-    X_train, X_test, y_train, y_test = joblib.load('models/liver/liver_data.pkl')
+    X_train, X_test, y_train, y_test = joblib.load(
+        'models/liver/liver_data.pkl')
 
-    # Random Forest
-    rf = RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1)
+    rf = RandomForestClassifier(
+        n_estimators=200,
+        random_state=42,
+        n_jobs=-1,
+        class_weight='balanced'
+    )
     rf.fit(X_train, y_train)
     joblib.dump(rf, 'models/liver/liver_rf.pkl')
 
-    # XGBoost
-    xgb = XGBClassifier(n_estimators=100, random_state=42,
-                         use_label_encoder=False, eval_metric='logloss')
+    xgb = XGBClassifier(
+        n_estimators=200,
+        random_state=42,
+        use_label_encoder=False,
+        eval_metric='logloss',
+        learning_rate=0.1,
+        max_depth=6
+    )
     xgb.fit(X_train, y_train)
     joblib.dump(xgb, 'models/liver/liver_xgb.pkl')
 
     print("  Results:")
-    rf_scores  = evaluate_model("Random Forest", rf, X_test, y_test)
-    xgb_scores = evaluate_model("XGBoost      ", xgb, X_test, y_test)
+    rf_scores  = evaluate_model(
+        "Random Forest", rf, X_test, y_test)
+    xgb_scores = evaluate_model(
+        "XGBoost      ", xgb, X_test, y_test)
     print(f"✅ Liver models saved!\n")
     return rf_scores, xgb_scores
 

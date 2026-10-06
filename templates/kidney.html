@@ -5,7 +5,7 @@
     <i class="fas fa-arrow-left"></i> Back
 </a>
 <div class="row justify-content-center">
-    <div class="col-lg-8">
+    <div class="col-lg-9">
         <div class="card">
             <div class="card-body p-0">
                 <div style="background:linear-gradient(135deg,#0c4a6e,#0284c7);
@@ -13,27 +13,28 @@
                     <div class="d-flex align-items-center gap-3">
                         <div style="background:rgba(255,255,255,0.2);
                              border-radius:12px;padding:12px;">
-                            <i class="fas fa-kidneys fa-lg"></i>
+                            <i class="fas fa-filter fa-lg"></i>
                         </div>
                         <div>
                             <h4 class="fw-bold mb-0">
-                                Kidney Disease Prediction
+                                Kidney Disease Risk Assessment
                             </h4>
                             <small class="opacity-75">
-                                Fill in your clinical test results below
+                                Fill all sections for accurate prediction
                             </small>
                         </div>
                     </div>
                 </div>
+
                 <div class="p-4">
                     <form action="/predict/kidney" method="POST"
                           onsubmit="showLoader()">
 
-                        <!-- Hidden defaults for non-critical fields -->
+                        <!-- Hidden defaults -->
                         <input type="hidden" name="Pus_Cell_Clumps"
-                               value="notpresent">
+                               value="not present">
                         <input type="hidden" name="Bacteria"
-                               value="notpresent">
+                               value="not present">
                         <input type="hidden" name="Packed_Cell_Volume"
                                value="40">
                         <input type="hidden" name="WBC_Count"
@@ -42,7 +43,6 @@
                                value="4.5">
                         <input type="hidden" name="Coronary_Artery"
                                value="no">
-                        <input type="hidden" name="eGFR" value="90">
                         <input type="hidden" name="Urine_Protein"
                                value="0.1">
                         <input type="hidden" name="Urine_Output"
@@ -57,36 +57,276 @@
                                value="9.5">
                         <input type="hidden" name="Serum_Phosphate"
                                value="3.5">
-                        <input type="hidden" name="Diabetes_Duration"
-                               value="0">
-                        <input type="hidden" name="Hypertension_Duration"
-                               value="0">
                         <input type="hidden" name="Cystatin_C"
                                value="1.0">
-                        <input type="hidden" name="Urinary_Sediment"
-                               value="normal">
-                        <input type="hidden" name="CRP_Level" value="2">
-                        <input type="hidden" name="IL6_Level" value="5">
-                        <input type="hidden" name="Physical_Activity"
-                               value="moderate">
-                        <input type="hidden" name="Smoking" value="no">
-                        <input type="hidden" name="Family_History"
-                               value="no">
+                        <input type="hidden" name="CRP_Level"
+                               value="2">
+                        <input type="hidden" name="IL6_Level"
+                               value="5">
 
+                        <!-- SECTION 1 — PERSONAL INFO -->
+                        <div class="section-label mb-3">
+                            <i class="fas fa-user me-1"></i>
+                            Personal Information
+                        </div>
                         <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Full Name (Optional)
+                                </label>
+                                <input type="text"
+                                       name="patient_name"
+                                       class="form-control"
+                                       placeholder="Enter your name">
+                            </div>
                             <div class="col-md-4 mb-3">
                                 <label class="form-label">Age</label>
                                 <input type="number" name="Age"
                                        class="form-control"
-                                       placeholder="e.g. 45" required>
+                                       placeholder="e.g. 45"
+                                       min="1" max="100" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">BMI</label>
+                                <input type="number" step="0.1"
+                                       name="BMI"
+                                       class="form-control"
+                                       placeholder="e.g. 25.5"
+                                       required>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 2 — LIFESTYLE -->
+                        <div class="section-label mb-3 mt-2">
+                            <i class="fas fa-running me-1"></i>
+                            Lifestyle Information
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Smoking Status
+                                </label>
+                                <select name="Smoking"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="no">
+                                        Non Smoker
+                                    </option>
+                                    <option value="yes">
+                                        Smoker
+                                    </option>
+                                </select>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label class="form-label">
-                                    Blood Pressure (mm/Hg)
+                                    Physical Activity Level
                                 </label>
-                                <input type="number" name="Blood_Pressure"
+                                <select name="Physical_Activity"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="high">
+                                        High (300+ mins/week)
+                                    </option>
+                                    <option value="moderate">
+                                        Moderate (150-300 mins/week)
+                                    </option>
+                                    <option value="low">
+                                        Low (below 150 mins/week)
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Appetite
+                                </label>
+                                <select name="Appetite"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="good">Good</option>
+                                    <option value="poor">
+                                        Poor / Reduced
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 3 — MEDICAL HISTORY -->
+                        <div class="section-label mb-3 mt-2">
+                            <i class="fas fa-notes-medical me-1"></i>
+                            Medical History
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Family History of Kidney Disease?
+                                </label>
+                                <select name="Family_History"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Do you have Hypertension?
+                                </label>
+                                <select name="Hypertension"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Do you have Diabetes?
+                                </label>
+                                <select name="Diabetes_Mellitus"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Years with Diabetes
+                                    <small class="text-muted">
+                                        (0 if no diabetes)
+                                    </small>
+                                </label>
+                                <input type="number"
+                                       name="Diabetes_Duration"
                                        class="form-control"
-                                       placeholder="Normal: 80" required>
+                                       placeholder="e.g. 0, 5, 10"
+                                       min="0" value="0" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Years with Hypertension
+                                    <small class="text-muted">
+                                        (0 if no hypertension)
+                                    </small>
+                                </label>
+                                <input type="number"
+                                       name="Hypertension_Duration"
+                                       class="form-control"
+                                       placeholder="e.g. 0, 3, 10"
+                                       min="0" value="0" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Do you have Anaemia?
+                                </label>
+                                <select name="Anaemia"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 4 — SYMPTOMS -->
+                        <div class="section-label mb-3 mt-2">
+                            <i class="fas fa-stethoscope me-1"></i>
+                            Current Symptoms
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Blood in Urine?
+                                </label>
+                                <select name="blood_urine"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Foamy Urine?
+                                </label>
+                                <select name="foamy_urine"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Back Pain near Kidneys?
+                                </label>
+                                <select name="back_pain"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Frequent Urination at Night?
+                                </label>
+                                <select name="frequent_night_urination"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Swollen Feet (Pedal Edema)?
+                                </label>
+                                <select name="Pedal_Edema"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Previously had Kidney Stones?
+                                </label>
+                                <select name="prev_kidney_stones"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 5 — LAB REPORTS -->
+                        <div class="section-label mb-3 mt-2">
+                            <i class="fas fa-flask me-1"></i>
+                            Lab Report Values
+                        </div>
+                        <div class="alert alert-warning py-2 mb-3"
+                             style="font-size:0.85rem;
+                             border-radius:10px;">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Get these values from your latest blood
+                            and urine test reports from the lab.
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Blood Pressure (mm/Hg)
+                                    <small class="text-muted">
+                                        Normal: 80
+                                    </small>
+                                </label>
+                                <input type="number"
+                                       name="Blood_Pressure"
+                                       class="form-control"
+                                       placeholder="e.g. 80, 100, 140"
+                                       required>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label class="form-label">
@@ -96,50 +336,66 @@
                                         class="form-select" required>
                                     <option value="">Select</option>
                                     <option value="1.005">
-                                        1.005 (Very dilute)
+                                        1.005 — Very Dilute
                                     </option>
                                     <option value="1.010">
-                                        1.010 (Dilute)
+                                        1.010 — Dilute
                                     </option>
                                     <option value="1.015" selected>
-                                        1.015 (Normal)
+                                        1.015 — Normal
                                     </option>
                                     <option value="1.020">
-                                        1.020 (Concentrated)
+                                        1.020 — Concentrated
                                     </option>
                                     <option value="1.025">
-                                        1.025 (Very concentrated)
+                                        1.025 — Very Concentrated
                                     </option>
                                 </select>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label class="form-label">
                                     Albumin in Urine
-                                    <small class="text-muted">(0=None)</small>
+                                    <small class="text-muted">
+                                        (0=None, 5=Very High)
+                                    </small>
                                 </label>
                                 <select name="Albumin"
                                         class="form-select" required>
-                                    <option value="0">0 — None (Normal)</option>
+                                    <option value="0">
+                                        0 — None (Normal)
+                                    </option>
                                     <option value="1">1 — Trace</option>
                                     <option value="2">2 — Mild</option>
-                                    <option value="3">3 — Moderate</option>
+                                    <option value="3">
+                                        3 — Moderate
+                                    </option>
                                     <option value="4">4 — High</option>
-                                    <option value="5">5 — Very High</option>
+                                    <option value="5">
+                                        5 — Very High
+                                    </option>
                                 </select>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label class="form-label">
                                     Sugar in Urine
-                                    <small class="text-muted">(0=None)</small>
+                                    <small class="text-muted">
+                                        (0=None, 5=Very High)
+                                    </small>
                                 </label>
                                 <select name="Sugar"
                                         class="form-select" required>
-                                    <option value="0">0 — None (Normal)</option>
+                                    <option value="0">
+                                        0 — None (Normal)
+                                    </option>
                                     <option value="1">1 — Trace</option>
                                     <option value="2">2 — Mild</option>
-                                    <option value="3">3 — Moderate</option>
+                                    <option value="3">
+                                        3 — Moderate
+                                    </option>
                                     <option value="4">4 — High</option>
-                                    <option value="5">5 — Very High</option>
+                                    <option value="5">
+                                        5 — Very High
+                                    </option>
                                 </select>
                             </div>
                             <div class="col-md-4 mb-3">
@@ -150,7 +406,9 @@
                                         class="form-select" required>
                                     <option value="">Select</option>
                                     <option value="normal">Normal</option>
-                                    <option value="abnormal">Abnormal</option>
+                                    <option value="abnormal">
+                                        Abnormal
+                                    </option>
                                 </select>
                             </div>
                             <div class="col-md-4 mb-3">
@@ -161,134 +419,133 @@
                                         class="form-select" required>
                                     <option value="">Select</option>
                                     <option value="normal">Normal</option>
-                                    <option value="abnormal">Abnormal</option>
+                                    <option value="abnormal">
+                                        Abnormal
+                                    </option>
                                 </select>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label class="form-label">
-                                    Blood Glucose (mg/dl)
+                                    Blood Glucose (mg/dL)
+                                    <small class="text-muted">
+                                        Normal: 70-140
+                                    </small>
                                 </label>
-                                <input type="number" name="Blood_Glucose"
+                                <input type="number"
+                                       name="Blood_Glucose"
                                        class="form-control"
-                                       placeholder="Normal: 70-140"
+                                       placeholder="e.g. 100, 180, 300"
                                        required>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label class="form-label">
-                                    Blood Urea (mg/dl)
+                                    Blood Urea (mg/dL)
+                                    <small class="text-muted">
+                                        Normal: 7-20
+                                    </small>
                                 </label>
                                 <input type="number" step="0.1"
-                                       name="Blood_Urea" class="form-control"
-                                       placeholder="Normal: 7-20" required>
+                                       name="Blood_Urea"
+                                       class="form-control"
+                                       placeholder="e.g. 15, 40, 100"
+                                       required>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label class="form-label">
-                                    Serum Creatinine (mg/dl)
+                                    Serum Creatinine (mg/dL)
+                                    <small class="text-muted">
+                                        Normal: 0.6-1.2
+                                    </small>
                                 </label>
                                 <input type="number" step="0.1"
                                        name="Serum_Creatinine"
                                        class="form-control"
-                                       placeholder="Normal: 0.6-1.2"
+                                       placeholder="e.g. 0.9, 2.0, 5.0"
                                        required>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label class="form-label">
                                     Sodium (mEq/L)
+                                    <small class="text-muted">
+                                        Normal: 136-145
+                                    </small>
                                 </label>
                                 <input type="number" step="0.1"
-                                       name="Sodium" class="form-control"
-                                       placeholder="Normal: 136-145"
+                                       name="Sodium"
+                                       class="form-control"
+                                       placeholder="e.g. 138"
                                        required>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label class="form-label">
                                     Potassium (mEq/L)
+                                    <small class="text-muted">
+                                        Normal: 3.5-5.0
+                                    </small>
                                 </label>
                                 <input type="number" step="0.1"
-                                       name="Potassium" class="form-control"
-                                       placeholder="Normal: 3.5-5.0"
+                                       name="Potassium"
+                                       class="form-control"
+                                       placeholder="e.g. 4.0"
                                        required>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label class="form-label">
                                     Haemoglobin (gms)
+                                    <small class="text-muted">
+                                        Normal: 12-17
+                                    </small>
                                 </label>
                                 <input type="number" step="0.1"
-                                       name="Haemoglobin" class="form-control"
-                                       placeholder="Normal: 12-17" required>
+                                       name="Haemoglobin"
+                                       class="form-control"
+                                       placeholder="e.g. 13.5"
+                                       required>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">
-                                    Do you have Hypertension?
+                                    eGFR — Kidney Filtration Rate
+                                    <small class="text-muted">
+                                        Normal: above 60
+                                    </small>
                                 </label>
-                                <select name="Hypertension"
-                                        class="form-select" required>
-                                    <option value="">Select</option>
-                                    <option value="yes">Yes</option>
-                                    <option value="no">No</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">
-                                    Do you have Diabetes?
-                                </label>
-                                <select name="Diabetes_Mellitus"
-                                        class="form-select" required>
-                                    <option value="">Select</option>
-                                    <option value="yes">Yes</option>
-                                    <option value="no">No</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Appetite</label>
-                                <select name="Appetite"
-                                        class="form-select" required>
-                                    <option value="">Select</option>
-                                    <option value="good">Good</option>
-                                    <option value="poor">Poor</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">
-                                    Swollen Feet (Pedal Edema)?
-                                </label>
-                                <select name="Pedal_Edema"
-                                        class="form-select" required>
-                                    <option value="">Select</option>
-                                    <option value="yes">Yes</option>
-                                    <option value="no">No</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Anaemia?</label>
-                                <select name="Anaemia"
-                                        class="form-select" required>
-                                    <option value="">Select</option>
-                                    <option value="yes">Yes</option>
-                                    <option value="no">No</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">BMI</label>
                                 <input type="number" step="0.1"
-                                       name="BMI" class="form-control"
-                                       placeholder="e.g. 25.5" required>
+                                       name="eGFR"
+                                       class="form-control"
+                                       placeholder="e.g. 90, 45, 15"
+                                       required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Urinary Sediment
+                                </label>
+                                <select name="Urinary_Sediment"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="normal">Normal</option>
+                                    <option value="abnormal">
+                                        Abnormal
+                                    </option>
+                                </select>
                             </div>
                         </div>
 
                         <div class="alert alert-info py-2"
-                             style="font-size:0.85rem;border-radius:10px;">
+                             style="font-size:0.85rem;
+                             border-radius:10px;">
                             <i class="fas fa-info-circle me-2"></i>
-                            This uses your blood and urine test results
-                            along with medical history for prediction.
+                            All sections together give a complete
+                            picture of your kidney health —
+                            similar to how a nephrologist assesses
+                            kidney function.
                         </div>
 
                         <div class="text-center mt-3">
                             <button type="submit"
-                                    class="btn btn-info btn-lg px-5
-                                    text-white">
+                                    class="btn btn-info btn-lg
+                                    px-5 text-white">
                                 <i class="fas fa-search me-2"></i>
-                                Predict Now
+                                Predict Kidney Disease Risk
                             </button>
                         </div>
                     </form>

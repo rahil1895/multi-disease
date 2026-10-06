@@ -4,21 +4,28 @@
 {% block extra_css %}
 <style>
     .hero-section {
-        background: linear-gradient(135deg, #0f2444 0%, #1a56db 100%);
+        background: url('/static/images/hero_bg.png')
+                    center center/cover no-repeat;
         border-radius: 20px;
-        padding: 50px 40px;
+        padding: 60px 40px;
         color: white;
         margin-bottom: 32px;
         position: relative;
         overflow: hidden;
+        min-height: 380px;
     }
     .hero-section::before {
         content: '';
         position: absolute;
-        top: -50px; right: -50px;
-        width: 300px; height: 300px;
-        background: rgba(255,255,255,0.05);
-        border-radius: 50%;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(10, 25, 55, 0.80);
+        border-radius: 20px;
+        z-index: 0;
+    }
+    .hero-content {
+        position: relative;
+        z-index: 1;
     }
     .disease-card {
         border-radius: 16px;
@@ -65,40 +72,53 @@
 
 {% block content %}
 
-<!-- Hero -->
+<!-- Hero Section -->
 <div class="hero-section">
-    <div class="row align-items-center">
+    <div class="hero-content row align-items-center">
         <div class="col-lg-8">
             <div class="mb-3">
-                <span class="badge bg-white bg-opacity-20 text-white px-3 py-2"
-                      style="border-radius:20px;font-size:0.8rem;">
+                <span class="badge px-3 py-2"
+                      style="background:rgba(255,255,255,0.15);
+                             color:white;
+                             border-radius:20px;
+                             font-size:0.8rem;
+                             border:1px solid rgba(255,255,255,0.3);">
                     <i class="fas fa-brain me-1"></i>
                     Powered by XGBoost + Random Forest + SHAP + LIME
                 </span>
             </div>
-            <h1 class="fw-bold mb-3" style="font-size:2.2rem;line-height:1.3;">
+            <h1 class="fw-bold mb-3"
+                style="font-size:2.4rem;line-height:1.3;">
                 AI-Powered Multi-Disease<br>Prediction System
             </h1>
-            <p class="mb-4 opacity-75" style="font-size:1.05rem;">
+            <p class="mb-4"
+               style="font-size:1.05rem;opacity:0.85;">
                 Get instant predictions for Heart Disease, Diabetes,
-                Liver Disease and Kidney Disease — with clear explanations
-                in plain English.
+                Liver Disease and Kidney Disease — with clear
+                explanations in plain English that anyone can understand.
             </p>
-            <a href="#diseases"
-               class="btn me-3"
-               style="background:white;color:#1a56db;font-weight:700;
-                      border-radius:10px;padding:12px 28px;">
-                <i class="fas fa-play me-2"></i>Start Prediction
-            </a>
-            <a href="/dashboard" class="btn"
-               style="background:rgba(255,255,255,0.15);color:white;
-                      border:1px solid rgba(255,255,255,0.3);
-                      border-radius:10px;padding:12px 28px;">
-                <i class="fas fa-chart-bar me-2"></i>View Dashboard
-            </a>
+            <div class="d-flex flex-wrap gap-3">
+                <a href="#diseases" class="btn fw-bold"
+                   style="background:white;
+                          color:#1a56db;
+                          border-radius:10px;
+                          padding:12px 28px;
+                          font-size:1rem;">
+                    <i class="fas fa-play me-2"></i>
+                    Start Prediction
+                </a>
+                <a href="/dashboard" class="btn fw-bold"
+                   style="background:rgba(255,255,255,0.15);
+                          color:white;
+                          border:1.5px solid rgba(255,255,255,0.4);
+                          border-radius:10px;
+                          padding:12px 28px;
+                          font-size:1rem;">
+                    <i class="fas fa-chart-bar me-2"></i>
+                    View Dashboard
+                </a>
+            </div>
         </div>
-        <div class="col-lg-4 text-center mt-4 mt-lg-0"
-             style="font-size:6rem;opacity:0.25;">🏥</div>
     </div>
 </div>
 
@@ -109,75 +129,85 @@
 <div class="row mb-4">
     <div class="col-6 col-md-3 mb-3">
         <a href="/heart" class="card disease-card">
-            <div class="disease-icon" style="background:#fff0f3;">
+            <div class="disease-icon"
+                 style="background:#fff0f3;">
                 <i class="fas fa-heart text-danger fa-2x"></i>
             </div>
             <h6 class="fw-bold mb-1">Heart Disease</h6>
-            <p class="text-muted mb-0" style="font-size:0.82rem;">
+            <p class="text-muted mb-0"
+               style="font-size:0.82rem;">
                 Cardiovascular risk prediction
             </p>
         </a>
     </div>
     <div class="col-6 col-md-3 mb-3">
         <a href="/diabetes" class="card disease-card">
-            <div class="disease-icon" style="background:#fffbf0;">
+            <div class="disease-icon"
+                 style="background:#fffbf0;">
                 <i class="fas fa-tint text-warning fa-2x"></i>
             </div>
             <h6 class="fw-bold mb-1">Diabetes</h6>
-            <p class="text-muted mb-0" style="font-size:0.82rem;">
+            <p class="text-muted mb-0"
+               style="font-size:0.82rem;">
                 Blood sugar level analysis
             </p>
         </a>
     </div>
     <div class="col-6 col-md-3 mb-3">
         <a href="/liver" class="card disease-card">
-            <div class="disease-icon" style="background:#f0fff8;">
+            <div class="disease-icon"
+                 style="background:#f0fff8;">
                 <i class="fas fa-procedures text-success fa-2x"></i>
             </div>
             <h6 class="fw-bold mb-1">Liver Disease</h6>
-            <p class="text-muted mb-0" style="font-size:0.82rem;">
+            <p class="text-muted mb-0"
+               style="font-size:0.82rem;">
                 Liver health assessment
             </p>
         </a>
     </div>
     <div class="col-6 col-md-3 mb-3">
         <a href="/kidney" class="card disease-card">
-            <div class="disease-icon" style="background:#f0fbff;">
-                <i class="fas fa-kidneys text-info fa-2x"></i>
+            <div class="disease-icon"
+                 style="background:#f0fbff;">
+                <i class="fas fa-filter text-info fa-2x"></i>
             </div>
             <h6 class="fw-bold mb-1">Kidney Disease</h6>
-            <p class="text-muted mb-0" style="font-size:0.82rem;">
+            <p class="text-muted mb-0"
+               style="font-size:0.82rem;">
                 Kidney function evaluation
             </p>
         </a>
     </div>
 </div>
 
-<!-- Features -->
+<!-- Features Section -->
 <div class="section-label">Why Use This System?</div>
 <div class="row">
     <div class="col-md-4 mb-3">
         <div class="card p-4">
             <div class="feature-item">
-                <div class="feature-icon" style="background:#eef2ff;">
+                <div class="feature-icon"
+                     style="background:#eef2ff;">
                     <i class="fas fa-brain text-primary"></i>
                 </div>
                 <div>
                     <h6 class="fw-bold mb-1">Explainable AI</h6>
                     <small class="text-muted">
-                        Every prediction comes with plain English reasons —
-                        no confusing medical jargon
+                        Every prediction comes with plain English
+                        reasons — no confusing medical jargon
                     </small>
                 </div>
             </div>
             <div class="feature-item">
-                <div class="feature-icon" style="background:#f0fff8;">
+                <div class="feature-icon"
+                     style="background:#f0fff8;">
                     <i class="fas fa-database text-success"></i>
                 </div>
                 <div>
                     <h6 class="fw-bold mb-1">Real Patient Data</h6>
                     <small class="text-muted">
-                        Trained on 374,000+ real clinical records
+                        Trained on 345,000+ real clinical records
                         from verified medical datasets
                     </small>
                 </div>
@@ -187,7 +217,8 @@
     <div class="col-md-4 mb-3">
         <div class="card p-4">
             <div class="feature-item">
-                <div class="feature-icon" style="background:#fffbf0;">
+                <div class="feature-icon"
+                     style="background:#fffbf0;">
                     <i class="fas fa-shield-alt text-warning"></i>
                 </div>
                 <div>
@@ -199,7 +230,8 @@
                 </div>
             </div>
             <div class="feature-item">
-                <div class="feature-icon" style="background:#fff0f3;">
+                <div class="feature-icon"
+                     style="background:#fff0f3;">
                     <i class="fas fa-bolt text-danger"></i>
                 </div>
                 <div>
@@ -215,7 +247,8 @@
     <div class="col-md-4 mb-3">
         <div class="card p-4">
             <div class="feature-item">
-                <div class="feature-icon" style="background:#f0fbff;">
+                <div class="feature-icon"
+                     style="background:#f0fbff;">
                     <i class="fas fa-history text-info"></i>
                 </div>
                 <div>
@@ -227,13 +260,15 @@
                 </div>
             </div>
             <div class="feature-item">
-                <div class="feature-icon" style="background:#f5f0ff;">
-                    <i class="fas fa-user-md" style="color:#7c3aed;"></i>
+                <div class="feature-icon"
+                     style="background:#f5f0ff;">
+                    <i class="fas fa-user-md"
+                       style="color:#7c3aed;"></i>
                 </div>
                 <div>
                     <h6 class="fw-bold mb-1">Doctor Friendly</h6>
                     <small class="text-muted">
-                        Advanced SHAP & LIME charts available
+                        Advanced SHAP and LIME charts available
                         for medical professionals
                     </small>
                 </div>

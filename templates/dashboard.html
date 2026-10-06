@@ -1,99 +1,298 @@
 {% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
-{% block content %}
-<h3 class="fw-bold mb-4">
-    <i class="fas fa-chart-bar text-primary me-2"></i>Dashboard
-</h3>
 
-<!-- Stats -->
+{% block extra_css %}
+<style>
+    .stat-card {
+        border-radius: 16px;
+        padding: 24px;
+        border-left: 4px solid;
+        transition: transform 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-3px); }
+    .shap-card {
+        border-radius: 16px;
+        overflow: hidden;
+    }
+    .shap-card .card-header {
+        font-weight: 600;
+        font-size: 0.9rem;
+        padding: 14px 18px;
+    }
+    .page-header-section {
+        background: linear-gradient(135deg, #0f2444, #1a56db);
+        border-radius: 16px;
+        padding: 28px 32px;
+        color: white;
+        margin-bottom: 24px;
+    }
+    .recent-table th {
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        background: #f8fafc;
+        color: #6b7280;
+        padding: 14px 16px;
+    }
+    .recent-table td {
+        padding: 14px 16px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    .recent-table tr:last-child td { border-bottom: none; }
+    .recent-table tr:hover { background: #f8fafc; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<div class="page-header-section">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h3 class="fw-bold mb-1">
+                <i class="fas fa-chart-bar me-2"></i>
+                Dashboard
+            </h3>
+            <p class="mb-0 opacity-75" style="font-size:0.9rem;">
+                Overview of all predictions and AI explanations
+            </p>
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+            <a href="/" class="btn fw-bold"
+               style="background:rgba(255,255,255,0.15);
+               color:white;
+               border:1px solid rgba(255,255,255,0.3);
+               border-radius:10px;padding:10px 20px;">
+                <i class="fas fa-plus me-2"></i>New Prediction
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Row -->
 <div class="row mb-4">
-    <div class="col-md-3 mb-3">
-        <div class="card stat-card p-3 text-center">
-            <div class="text-muted small">Total Predictions</div>
-            <div class="fw-bold fs-2 text-primary">{{ counts.total }}</div>
+    <div class="col-6 col-md-3 mb-3">
+        <div class="card stat-card" style="border-left-color:#1a56db;">
+            <div class="text-muted mb-1" style="font-size:0.82rem;">
+                Total Predictions
+            </div>
+            <div class="fw-bold text-primary"
+                 style="font-size:2rem;">
+                {{ counts.total }}
+            </div>
+            <small class="text-muted">All diseases</small>
         </div>
     </div>
-    <div class="col-md-3 mb-3">
-        <div class="card p-3 text-center" style="border-left:4px solid #E63757">
-            <div class="text-muted small">Heart</div>
-            <div class="fw-bold fs-2 text-danger">{{ counts.heart }}</div>
+    <div class="col-6 col-md-3 mb-3">
+        <div class="card stat-card" style="border-left-color:#E63757;">
+            <div class="d-flex align-items-center mb-1">
+                <i class="fas fa-heart text-danger me-2"></i>
+                <span class="text-muted" style="font-size:0.82rem;">
+                    Heart Disease
+                </span>
+            </div>
+            <div class="fw-bold text-danger"
+                 style="font-size:2rem;">
+                {{ counts.heart }}
+            </div>
+            <small class="text-muted">Predictions</small>
         </div>
     </div>
-    <div class="col-md-3 mb-3">
-        <div class="card p-3 text-center" style="border-left:4px solid #F6C343">
-            <div class="text-muted small">Diabetes</div>
-            <div class="fw-bold fs-2 text-warning">{{ counts.diabetes }}</div>
+    <div class="col-6 col-md-3 mb-3">
+        <div class="card stat-card" style="border-left-color:#F6C343;">
+            <div class="d-flex align-items-center mb-1">
+                <i class="fas fa-tint text-warning me-2"></i>
+                <span class="text-muted" style="font-size:0.82rem;">
+                    Diabetes
+                </span>
+            </div>
+            <div class="fw-bold text-warning"
+                 style="font-size:2rem;">
+                {{ counts.diabetes }}
+            </div>
+            <small class="text-muted">Predictions</small>
         </div>
     </div>
-    <div class="col-md-3 mb-3">
-        <div class="card p-3 text-center" style="border-left:4px solid #00D97E">
-            <div class="text-muted small">Liver</div>
-            <div class="fw-bold fs-2 text-success">{{ counts.liver }}</div>
+    <div class="col-6 col-md-3 mb-3">
+        <div class="card stat-card" style="border-left-color:#00D97E;">
+            <div class="d-flex align-items-center mb-1">
+                <i class="fas fa-procedures text-success me-2"></i>
+                <span class="text-muted" style="font-size:0.82rem;">
+                    Liver Disease
+                </span>
+            </div>
+            <div class="fw-bold text-success"
+                 style="font-size:2rem;">
+                {{ counts.liver }}
+            </div>
+            <small class="text-muted">Predictions</small>
+        </div>
+    </div>
+</div>
+
+<!-- Second Stats Row -->
+<div class="row mb-4">
+    <div class="col-6 col-md-3 mb-3">
+        <div class="card stat-card" style="border-left-color:#39afd1;">
+            <div class="d-flex align-items-center mb-1">
+                <i class="fas fa-filter text-info me-2"></i>
+                <span class="text-muted" style="font-size:0.82rem;">
+                    Kidney Disease
+                </span>
+            </div>
+            <div class="fw-bold text-info"
+                 style="font-size:2rem;">
+                {{ counts.kidney }}
+            </div>
+            <small class="text-muted">Predictions</small>
         </div>
     </div>
 </div>
 
 <!-- SHAP Charts -->
+<div class="section-label">
+    SHAP Feature Importance Charts
+</div>
 <div class="row mb-4">
-    <div class="col-12 mb-3">
-        <h5 class="fw-bold">
-            <i class="fas fa-chart-bar text-primary me-2"></i>
-            SHAP Feature Importance Charts
-        </h5>
-    </div>
-    {% for disease in ['heart', 'diabetes', 'liver', 'kidney'] %}
     <div class="col-md-6 mb-4">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                {{ disease.title() }} Disease — SHAP
+        <div class="card shap-card">
+            <div class="card-header bg-danger text-white">
+                <i class="fas fa-heart me-2"></i>
+                Heart Disease — Feature Importance
             </div>
-            <div class="card-body text-center">
-                <img src="/static/images/shap/{{ disease }}_shap_bar.png"
-                     class="img-fluid rounded" alt="{{ disease }} SHAP">
+            <div class="card-body text-center p-3">
+                <img src="/static/images/shap/heart_shap_bar.png"
+                     class="img-fluid rounded"
+                     alt="Heart SHAP Chart"
+                     onerror="this.style.display='none'">
             </div>
         </div>
     </div>
-    {% endfor %}
+    <div class="col-md-6 mb-4">
+        <div class="card shap-card">
+            <div class="card-header bg-warning text-dark">
+                <i class="fas fa-tint me-2"></i>
+                Diabetes — Feature Importance
+            </div>
+            <div class="card-body text-center p-3">
+                <img src="/static/images/shap/diabetes_shap_bar.png"
+                     class="img-fluid rounded"
+                     alt="Diabetes SHAP Chart"
+                     onerror="this.style.display='none'">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card shap-card">
+            <div class="card-header bg-success text-white">
+                <i class="fas fa-procedures me-2"></i>
+                Liver Disease — Feature Importance
+            </div>
+            <div class="card-body text-center p-3">
+                <img src="/static/images/shap/liver_shap_bar.png"
+                     class="img-fluid rounded"
+                     alt="Liver SHAP Chart"
+                     onerror="this.style.display='none'">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card shap-card">
+            <div class="card-header bg-info text-white">
+                <i class="fas fa-filter me-2"></i>
+                Kidney Disease — Feature Importance
+            </div>
+            <div class="card-body text-center p-3">
+                <img src="/static/images/shap/kidney_shap_bar.png"
+                     class="img-fluid rounded"
+                     alt="Kidney SHAP Chart"
+                     onerror="this.style.display='none'">
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Recent Predictions -->
+<div class="section-label">Recent Predictions</div>
 <div class="card">
-    <div class="card-header bg-dark text-white p-3">
-        <h5 class="mb-0">
-            <i class="fas fa-history me-2"></i>Recent Predictions
-        </h5>
-    </div>
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead class="table-light">
+            <table class="table recent-table mb-0">
+                <thead>
                     <tr>
+                        <th class="ps-4">#</th>
                         <th>Disease</th>
                         <th>Prediction</th>
                         <th>Confidence</th>
-                        <th>Time</th>
+                        <th>Date & Time</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for r in records %}
                     <tr>
+                        <td class="ps-4 text-muted fw-bold">
+                            {{ loop.index }}
+                        </td>
                         <td>
                             <span class="badge
                                 {% if r.disease == 'heart' %}bg-danger
                                 {% elif r.disease == 'diabetes' %}bg-warning text-dark
                                 {% elif r.disease == 'liver' %}bg-success
-                                {% else %}bg-info{% endif %}">
+                                {% else %}bg-info{% endif %}
+                                px-3 py-2"
+                                style="border-radius:8px;font-size:0.82rem;">
+                                {% if r.disease == 'heart' %}
+                                    <i class="fas fa-heart me-1"></i>
+                                {% elif r.disease == 'diabetes' %}
+                                    <i class="fas fa-tint me-1"></i>
+                                {% elif r.disease == 'liver' %}
+                                    <i class="fas fa-procedures me-1"></i>
+                                {% else %}
+                                    <i class="fas fa-filter me-1"></i>
+                                {% endif %}
                                 {{ r.disease.title() }}
                             </span>
                         </td>
-                        <td>{{ r.prediction }}</td>
-                        <td>{{ r.confidence }}%</td>
-                        <td>{{ r.timestamp }}</td>
+                        <td>
+                            <span class="fw-bold
+                                {% if 'No' in r.prediction %}text-success
+                                {% elif 'Severe' in r.prediction or 'High' in r.prediction %}text-danger
+                                {% else %}text-warning{% endif %}">
+                                {{ r.prediction }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="progress"
+                                 style="height:8px;width:100px;">
+                                <div class="progress-bar
+                                    {% if r.confidence >= 80 %}bg-success
+                                    {% elif r.confidence >= 60 %}bg-warning
+                                    {% else %}bg-danger{% endif %}"
+                                    style="width:{{ r.confidence }}%">
+                                </div>
+                            </div>
+                            <small class="text-muted">
+                                {{ r.confidence }}%
+                            </small>
+                        </td>
+                        <td>
+                            <small class="text-muted">
+                                {{ r.timestamp }}
+                            </small>
+                        </td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="4" class="text-center text-muted py-4">
-                            No predictions yet
+                        <td colspan="5" class="text-center
+                            text-muted py-5">
+                            <i class="fas fa-chart-bar fa-3x
+                               mb-3 d-block opacity-25"></i>
+                            <h6>No predictions yet</h6>
+                            <a href="/" class="btn btn-primary mt-2">
+                                Start Prediction
+                            </a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -102,4 +301,5 @@
         </div>
     </div>
 </div>
+
 {% endblock %}

@@ -1,58 +1,726 @@
 {% extends "base.html" %}
 {% block title %}Prediction History{% endblock %}
+
+{% block extra_css %}
+<style>
+    .nav-tab-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: white;
+        color: #374151;
+        padding: 10px 18px;
+        border-radius: 10px;
+        border: 1.5px solid #e5e7eb;
+        font-weight: 600;
+        font-size: 0.88rem;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: all 0.2s;
+    }
+    .nav-tab-btn:hover {
+        border-color: #1a56db;
+        color: #1a56db;
+    }
+    .nav-tab-btn.active {
+        background: #1a56db !important;
+        color: white !important;
+        border-color: #1a56db !important;
+    }
+    .nav-tab-btn.active:hover {
+        color: white !important;
+    }
+    .history-table th {
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        background: #f8fafc;
+        color: #6b7280;
+        padding: 14px 16px;
+    }
+    .history-table td {
+        vertical-align: middle;
+        font-size: 0.9rem;
+        padding: 14px 16px;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    .history-table tr:last-child td {
+        border-bottom: none;
+    }
+    .history-table tr:hover {
+        background: #f8fafc;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #9ca3af;
+    }
+    .confidence-bar {
+        height: 6px;
+        border-radius: 10px;
+        background: #e5e7eb;
+        width: 80px;
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 8px;
+    }
+    .confidence-fill {
+        height: 6px;
+        border-radius: 10px;
+    }
+    .page-header-section {
+        background: linear-gradient(135deg, #0f2444, #1a56db);
+        border-radius: 16px;
+        padding: 28px 32px;
+        color: white;
+        margin-bottom: 24px;
+    }
+    .disease-badge {
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.82rem;
+    }
+    .tab-section-header {
+        border-radius: 16px 16px 0 0;
+        padding: 16px 20px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<h3 class="fw-bold mb-4">
-    <i class="fas fa-history text-primary me-2"></i>Prediction History
-</h3>
-<div class="card">
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead class="table-dark">
-                    <tr>
-                        <th>#</th>
-                        <th>Disease</th>
-                        <th>Prediction</th>
-                        <th>Confidence</th>
-                        <th>Explanation</th>
-                        <th>Timestamp</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for r in records %}
-                    <tr>
-                        <td>{{ loop.index }}</td>
-                        <td>
-                            <span class="badge
-                                {% if r.disease == 'heart' %}bg-danger
-                                {% elif r.disease == 'diabetes' %}bg-warning text-dark
-                                {% elif r.disease == 'liver' %}bg-success
-                                {% else %}bg-info{% endif %}">
-                                {{ r.disease.title() }}
-                            </span>
-                        </td>
-                        <td><strong>{{ r.prediction }}</strong></td>
-                        <td>
-                            <div class="progress" style="width:100px;height:8px;">
-                                <div class="progress-bar bg-primary"
-                                     style="width:{{ r.confidence }}%"></div>
-                            </div>
-                            <small>{{ r.confidence }}%</small>
-                        </td>
-                        <td><small class="text-muted">{{ r.explanation_text }}</small></td>
-                        <td><small>{{ r.timestamp }}</small></td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="6" class="text-center text-muted py-4">
-                            No predictions yet. 
-                            <a href="/">Make your first prediction!</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+
+<!-- Page Header -->
+<div class="page-header-section">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h3 class="fw-bold mb-1">
+                <i class="fas fa-history me-2"></i>
+                Prediction History
+            </h3>
+            <p class="mb-0 opacity-75" style="font-size:0.9rem;">
+                View all past predictions made across all 4 diseases
+            </p>
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+            <a href="/" class="btn fw-bold"
+               style="background:rgba(255,255,255,0.15);
+               color:white;
+               border:1px solid rgba(255,255,255,0.3);
+               border-radius:10px;padding:10px 20px;">
+                <i class="fas fa-plus me-2"></i>New Prediction
+            </a>
         </div>
     </div>
 </div>
+
+<!-- Disease Tabs -->
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <a class="nav-tab-btn active" data-bs-toggle="pill"
+       href="#all" role="tab">
+        <i class="fas fa-th"></i>
+        All Diseases
+        <span class="badge bg-white text-primary"
+              style="font-size:0.75rem;">
+            {{ records|length }}
+        </span>
+    </a>
+    <a class="nav-tab-btn" data-bs-toggle="pill"
+       href="#heart" role="tab">
+        <i class="fas fa-heart text-danger"></i>
+        Heart Disease
+        <span class="badge bg-danger"
+              style="font-size:0.75rem;">
+            {{ records|selectattr('disease','equalto',
+               'heart')|list|length }}
+        </span>
+    </a>
+    <a class="nav-tab-btn" data-bs-toggle="pill"
+       href="#diabetes" role="tab">
+        <i class="fas fa-tint text-warning"></i>
+        Diabetes
+        <span class="badge bg-warning text-dark"
+              style="font-size:0.75rem;">
+            {{ records|selectattr('disease','equalto',
+               'diabetes')|list|length }}
+        </span>
+    </a>
+    <a class="nav-tab-btn" data-bs-toggle="pill"
+       href="#liver" role="tab">
+        <i class="fas fa-procedures text-success"></i>
+        Liver Disease
+        <span class="badge bg-success"
+              style="font-size:0.75rem;">
+            {{ records|selectattr('disease','equalto',
+               'liver')|list|length }}
+        </span>
+    </a>
+    <a class="nav-tab-btn" data-bs-toggle="pill"
+       href="#kidney" role="tab">
+        <i class="fas fa-filter text-info"></i>
+        Kidney Disease
+        <span class="badge bg-info"
+              style="font-size:0.75rem;">
+            {{ records|selectattr('disease','equalto',
+               'kidney')|list|length }}
+        </span>
+    </a>
+</div>
+
+<!-- Tab Content -->
+<div class="tab-content">
+
+    <!-- ALL DISEASES -->
+    <div class="tab-pane fade show active" id="all">
+        <div class="card">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table history-table mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">#</th>
+                                <th>Disease</th>
+                                <th>Prediction</th>
+                                <th>Confidence</th>
+                                <th>Reason</th>
+                                <th>Date & Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in records %}
+                            <tr>
+                                <td class="ps-4 text-muted fw-bold">
+                                    {{ loop.index }}
+                                </td>
+                                <td>
+                                    <span class="disease-badge
+                                        {% if r.disease == 'heart' %}
+                                            bg-danger bg-opacity-10
+                                            text-danger
+                                        {% elif r.disease == 'diabetes' %}
+                                            bg-warning bg-opacity-10
+                                            text-warning
+                                        {% elif r.disease == 'liver' %}
+                                            bg-success bg-opacity-10
+                                            text-success
+                                        {% else %}
+                                            bg-info bg-opacity-10
+                                            text-info
+                                        {% endif %}">
+                                        {% if r.disease == 'heart' %}
+                                            <i class="fas fa-heart me-1"></i>
+                                        {% elif r.disease == 'diabetes' %}
+                                            <i class="fas fa-tint me-1"></i>
+                                        {% elif r.disease == 'liver' %}
+                                            <i class="fas fa-procedures me-1"></i>
+                                        {% else %}
+                                            <i class="fas fa-filter me-1"></i>
+                                        {% endif %}
+                                        {{ r.disease.title() }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="fw-bold
+                                        {% if 'No' in r.prediction %}
+                                            text-success
+                                        {% elif 'Severe' in r.prediction
+                                             or 'High' in r.prediction %}
+                                            text-danger
+                                        {% else %}
+                                            text-warning
+                                        {% endif %}">
+                                        {% if 'No' in r.prediction %}
+                                            <i class="fas fa-check-circle
+                                               me-1"></i>
+                                        {% elif 'Severe' in r.prediction %}
+                                            <i class="fas fa-exclamation-circle
+                                               me-1"></i>
+                                        {% else %}
+                                            <i class="fas fa-exclamation-triangle
+                                               me-1"></i>
+                                        {% endif %}
+                                        {{ r.prediction }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="confidence-bar">
+                                            <div class="confidence-fill
+                                                {% if r.confidence >= 80 %}
+                                                    bg-success
+                                                {% elif r.confidence >= 60 %}
+                                                    bg-warning
+                                                {% else %}
+                                                    bg-danger
+                                                {% endif %}"
+                                                style="width:{{ r.confidence }}%">
+                                            </div>
+                                        </div>
+                                        <span class="fw-bold">
+                                            {{ r.confidence }}%
+                                        </span>
+                                    </div>
+                                </td>
+                                <td style="max-width:200px;">
+                                    <small class="text-muted">
+                                        {{ r.explanation_text[:60] }}
+                                        {% if r.explanation_text|length > 60 %}
+                                            ...
+                                        {% endif %}
+                                    </small>
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        {{ r.timestamp }}
+                                    </small>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="6">
+                                    <div class="empty-state">
+                                        <i class="fas fa-history fa-3x
+                                           mb-3 d-block"></i>
+                                        <h5 class="fw-bold">
+                                            No predictions yet
+                                        </h5>
+                                        <p>
+                                            Make your first prediction
+                                            to see history here
+                                        </p>
+                                        <a href="/"
+                                           class="btn btn-primary mt-2">
+                                            <i class="fas fa-play me-2"></i>
+                                            Start Prediction
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEART -->
+    <div class="tab-pane fade" id="heart">
+        <div class="card">
+            <div class="tab-section-header"
+                 style="background:#fff0f3;
+                 border-bottom:1px solid #ffd6e0;">
+                <h6 class="fw-bold mb-0 text-danger">
+                    <i class="fas fa-heart me-2"></i>
+                    Heart Disease Predictions
+                </h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table history-table mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">#</th>
+                                <th>Prediction</th>
+                                <th>Confidence</th>
+                                <th>Reason</th>
+                                <th>Date & Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set heart_records = records|selectattr(
+                                'disease','equalto','heart')|list %}
+                            {% for r in heart_records %}
+                            <tr>
+                                <td class="ps-4 text-muted fw-bold">
+                                    {{ loop.index }}
+                                </td>
+                                <td>
+                                    <span class="fw-bold
+                                        {% if 'No' in r.prediction %}
+                                            text-success
+                                        {% else %}
+                                            text-danger
+                                        {% endif %}">
+                                        {% if 'No' in r.prediction %}
+                                            <i class="fas fa-check-circle
+                                               me-1"></i>
+                                        {% else %}
+                                            <i class="fas fa-exclamation-circle
+                                               me-1"></i>
+                                        {% endif %}
+                                        {{ r.prediction }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="confidence-bar">
+                                            <div class="confidence-fill
+                                                 bg-danger"
+                                                 style="width:{{ r.confidence }}%">
+                                            </div>
+                                        </div>
+                                        <span class="fw-bold">
+                                            {{ r.confidence }}%
+                                        </span>
+                                    </div>
+                                </td>
+                                <td style="max-width:250px;">
+                                    <small class="text-muted">
+                                        {{ r.explanation_text[:80] }}
+                                        {% if r.explanation_text|length > 80 %}
+                                            ...
+                                        {% endif %}
+                                    </small>
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        {{ r.timestamp }}
+                                    </small>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5">
+                                    <div class="empty-state">
+                                        <i class="fas fa-heart fa-3x
+                                           text-danger mb-3 d-block"></i>
+                                        <h5 class="fw-bold">
+                                            No Heart Disease predictions yet
+                                        </h5>
+                                        <p>Check your heart health now</p>
+                                        <a href="/heart"
+                                           class="btn btn-danger mt-2">
+                                            Predict Heart Disease
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DIABETES -->
+    <div class="tab-pane fade" id="diabetes">
+        <div class="card">
+            <div class="tab-section-header"
+                 style="background:#fffbf0;
+                 border-bottom:1px solid #fde68a;">
+                <h6 class="fw-bold mb-0 text-warning">
+                    <i class="fas fa-tint me-2"></i>
+                    Diabetes Predictions
+                </h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table history-table mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">#</th>
+                                <th>Prediction</th>
+                                <th>Confidence</th>
+                                <th>Reason</th>
+                                <th>Date & Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set diabetes_records = records|selectattr(
+                                'disease','equalto','diabetes')|list %}
+                            {% for r in diabetes_records %}
+                            <tr>
+                                <td class="ps-4 text-muted fw-bold">
+                                    {{ loop.index }}
+                                </td>
+                                <td>
+                                    <span class="fw-bold
+                                        {% if 'No' in r.prediction %}
+                                            text-success
+                                        {% elif 'Pre' in r.prediction %}
+                                            text-warning
+                                        {% else %}
+                                            text-danger
+                                        {% endif %}">
+                                        {% if 'No' in r.prediction %}
+                                            <i class="fas fa-check-circle
+                                               me-1"></i>
+                                        {% elif 'Pre' in r.prediction %}
+                                            <i class="fas fa-exclamation-triangle
+                                               me-1"></i>
+                                        {% else %}
+                                            <i class="fas fa-exclamation-circle
+                                               me-1"></i>
+                                        {% endif %}
+                                        {{ r.prediction }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="confidence-bar">
+                                            <div class="confidence-fill
+                                                 bg-warning"
+                                                 style="width:{{ r.confidence }}%">
+                                            </div>
+                                        </div>
+                                        <span class="fw-bold">
+                                            {{ r.confidence }}%
+                                        </span>
+                                    </div>
+                                </td>
+                                <td style="max-width:250px;">
+                                    <small class="text-muted">
+                                        {{ r.explanation_text[:80] }}
+                                        {% if r.explanation_text|length > 80 %}
+                                            ...
+                                        {% endif %}
+                                    </small>
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        {{ r.timestamp }}
+                                    </small>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5">
+                                    <div class="empty-state">
+                                        <i class="fas fa-tint fa-3x
+                                           text-warning mb-3 d-block"></i>
+                                        <h5 class="fw-bold">
+                                            No Diabetes predictions yet
+                                        </h5>
+                                        <p>Check your diabetes risk now</p>
+                                        <a href="/diabetes"
+                                           class="btn btn-warning mt-2">
+                                            Predict Diabetes
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LIVER -->
+    <div class="tab-pane fade" id="liver">
+        <div class="card">
+            <div class="tab-section-header"
+                 style="background:#f0fff8;
+                 border-bottom:1px solid #a7f3d0;">
+                <h6 class="fw-bold mb-0 text-success">
+                    <i class="fas fa-procedures me-2"></i>
+                    Liver Disease Predictions
+                </h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table history-table mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">#</th>
+                                <th>Prediction</th>
+                                <th>Confidence</th>
+                                <th>Reason</th>
+                                <th>Date & Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set liver_records = records|selectattr(
+                                'disease','equalto','liver')|list %}
+                            {% for r in liver_records %}
+                            <tr>
+                                <td class="ps-4 text-muted fw-bold">
+                                    {{ loop.index }}
+                                </td>
+                                <td>
+                                    <span class="fw-bold
+                                        {% if 'No' in r.prediction %}
+                                            text-success
+                                        {% else %}
+                                            text-danger
+                                        {% endif %}">
+                                        {% if 'No' in r.prediction %}
+                                            <i class="fas fa-check-circle
+                                               me-1"></i>
+                                        {% else %}
+                                            <i class="fas fa-exclamation-circle
+                                               me-1"></i>
+                                        {% endif %}
+                                        {{ r.prediction }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="confidence-bar">
+                                            <div class="confidence-fill
+                                                 bg-success"
+                                                 style="width:{{ r.confidence }}%">
+                                            </div>
+                                        </div>
+                                        <span class="fw-bold">
+                                            {{ r.confidence }}%
+                                        </span>
+                                    </div>
+                                </td>
+                                <td style="max-width:250px;">
+                                    <small class="text-muted">
+                                        {{ r.explanation_text[:80] }}
+                                        {% if r.explanation_text|length > 80 %}
+                                            ...
+                                        {% endif %}
+                                    </small>
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        {{ r.timestamp }}
+                                    </small>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5">
+                                    <div class="empty-state">
+                                        <i class="fas fa-procedures fa-3x
+                                           text-success mb-3 d-block"></i>
+                                        <h5 class="fw-bold">
+                                            No Liver Disease predictions yet
+                                        </h5>
+                                        <p>Check your liver health now</p>
+                                        <a href="/liver"
+                                           class="btn btn-success mt-2">
+                                            Predict Liver Disease
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KIDNEY -->
+    <div class="tab-pane fade" id="kidney">
+        <div class="card">
+            <div class="tab-section-header"
+                 style="background:#f0fbff;
+                 border-bottom:1px solid #bae6fd;">
+                <h6 class="fw-bold mb-0 text-info">
+                    <i class="fas fa-filter me-2"></i>
+                    Kidney Disease Predictions
+                </h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table history-table mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">#</th>
+                                <th>Prediction</th>
+                                <th>Confidence</th>
+                                <th>Reason</th>
+                                <th>Date & Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set kidney_records = records|selectattr(
+                                'disease','equalto','kidney')|list %}
+                            {% for r in kidney_records %}
+                            <tr>
+                                <td class="ps-4 text-muted fw-bold">
+                                    {{ loop.index }}
+                                </td>
+                                <td>
+                                    <span class="fw-bold
+                                        {% if 'No Disease' in r.prediction %}
+                                            text-success
+                                        {% elif 'Low' in r.prediction %}
+                                            text-info
+                                        {% elif 'Moderate' in r.prediction %}
+                                            text-warning
+                                        {% else %}
+                                            text-danger
+                                        {% endif %}">
+                                        {% if 'No Disease' in r.prediction %}
+                                            <i class="fas fa-check-circle
+                                               me-1"></i>
+                                        {% elif 'Low' in r.prediction %}
+                                            <i class="fas fa-info-circle
+                                               me-1"></i>
+                                        {% elif 'Moderate' in r.prediction %}
+                                            <i class="fas fa-exclamation-triangle
+                                               me-1"></i>
+                                        {% else %}
+                                            <i class="fas fa-exclamation-circle
+                                               me-1"></i>
+                                        {% endif %}
+                                        {{ r.prediction }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="confidence-bar">
+                                            <div class="confidence-fill
+                                                 bg-info"
+                                                 style="width:{{ r.confidence }}%">
+                                            </div>
+                                        </div>
+                                        <span class="fw-bold">
+                                            {{ r.confidence }}%
+                                        </span>
+                                    </div>
+                                </td>
+                                <td style="max-width:250px;">
+                                    <small class="text-muted">
+                                        {{ r.explanation_text[:80] }}
+                                        {% if r.explanation_text|length > 80 %}
+                                            ...
+                                        {% endif %}
+                                    </small>
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        {{ r.timestamp }}
+                                    </small>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5">
+                                    <div class="empty-state">
+                                        <i class="fas fa-filter fa-3x
+                                           text-info mb-3 d-block"></i>
+                                        <h5 class="fw-bold">
+                                            No Kidney Disease predictions yet
+                                        </h5>
+                                        <p>Check your kidney health now</p>
+                                        <a href="/kidney"
+                                           class="btn btn-info
+                                           text-white mt-2">
+                                            Predict Kidney Disease
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
 {% endblock %}

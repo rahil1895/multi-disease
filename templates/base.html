@@ -63,10 +63,7 @@
             padding: 10px 20px;
             transition: all 0.2s;
         }
-        .btn-primary {
-            background: #1a56db;
-            border: none;
-        }
+        .btn-primary { background: #1a56db; border: none; }
         .btn-primary:hover {
             background: #1447c4;
             transform: translateY(-1px);
@@ -234,14 +231,11 @@
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
         /* ── PAGE FADE IN ── */
-        .container {
-            animation: fadeIn 0.3s ease-in-out;
-        }
+        .container { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(8px); }
             to   { opacity: 1; transform: translateY(0);   }
         }
-
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -276,8 +270,6 @@
 <!-- ══════════════════════════════════════════════ -->
 <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
     <div class="container">
-
-        <!-- Brand -->
         <a class="navbar-brand d-flex align-items-center gap-2" href="/">
             <div style="background:rgba(255,255,255,0.15);
                  border-radius:10px;padding:8px 11px;line-height:1;">
@@ -295,31 +287,23 @@
             </div>
         </a>
 
-        <!-- Toggler -->
         <button class="navbar-toggler border-0" type="button"
                 data-bs-toggle="collapse"
-                data-bs-target="#navbarNav"
-                aria-controls="navbarNav"
-                aria-expanded="false"
-                aria-label="Toggle navigation">
+                data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <!-- Nav Links -->
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto align-items-center gap-1">
-
                 <li class="nav-item">
                     <a class="nav-link" href="/">
                         <i class="fas fa-home me-1"
                            style="font-size:0.85rem;"></i>Home
                     </a>
                 </li>
-
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#"
-                       data-bs-toggle="dropdown"
-                       aria-expanded="false">
+                       data-bs-toggle="dropdown">
                         <i class="fas fa-stethoscope me-1"
                            style="font-size:0.85rem;"></i>
                         Predict Disease
@@ -358,14 +342,13 @@
                         </li>
                         <li>
                             <a class="dropdown-item" href="/kidney">
-                                <i class="fas fa-kidneys text-info me-2"
+                                <i class="fas fa-filter text-info me-2"
                                    style="width:16px;"></i>
                                 Kidney Disease
                             </a>
                         </li>
                     </ul>
                 </li>
-
                 <li class="nav-item">
                     <a class="nav-link" href="/dashboard">
                         <i class="fas fa-chart-bar me-1"
@@ -373,7 +356,6 @@
                         Dashboard
                     </a>
                 </li>
-
                 <li class="nav-item">
                     <a class="nav-link" href="/history">
                         <i class="fas fa-history me-1"
@@ -381,7 +363,6 @@
                         History
                     </a>
                 </li>
-
             </ul>
         </div>
     </div>
@@ -453,7 +434,6 @@
 <script>
     const loader = document.getElementById('loader');
 
-    // ── Always hide loader immediately on page load ──
     function hideLoader() {
         if (loader) {
             loader.classList.remove('active');
@@ -461,35 +441,25 @@
         }
     }
 
-    // Hide loader right away when script runs
     hideLoader();
 
-    // Hide on every possible navigation/load event
     window.addEventListener('load',     hideLoader);
     window.addEventListener('pageshow', hideLoader);
     window.addEventListener('popstate', hideLoader);
     document.addEventListener('DOMContentLoaded', hideLoader);
 
-    // ── Handle bfcache (browser back/forward cache) ──
-    // This is the key fix for the back button issue
     window.addEventListener('pageshow', function(e) {
-        if (e.persisted) {
-            // Page restored from bfcache (back button pressed)
-            hideLoader();
-        }
+        if (e.persisted) { hideLoader(); }
     });
 
-    // ── Show loader only when form is submitted ──
     function showLoader() {
         if (loader) {
             loader.style.display = 'flex';
             loader.classList.add('active');
-            // Safety auto-hide after 90 seconds
             setTimeout(hideLoader, 90000);
         }
     }
 
-    // ── Highlight active nav link ──
     document.addEventListener('DOMContentLoaded', function() {
         const path = window.location.pathname;
         document.querySelectorAll('.nav-link').forEach(function(link) {

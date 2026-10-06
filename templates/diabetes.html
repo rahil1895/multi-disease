@@ -5,7 +5,7 @@
     <i class="fas fa-arrow-left"></i> Back
 </a>
 <div class="row justify-content-center">
-    <div class="col-lg-7">
+    <div class="col-lg-8">
         <div class="card">
             <div class="card-body p-0">
                 <div style="background:linear-gradient(135deg,#78350f,#d97706);
@@ -16,198 +16,349 @@
                             <i class="fas fa-tint fa-lg"></i>
                         </div>
                         <div>
-                            <h4 class="fw-bold mb-0">Diabetes Prediction</h4>
+                            <h4 class="fw-bold mb-0">
+                                Diabetes Risk Assessment
+                            </h4>
                             <small class="opacity-75">
-                                Fill in your basic health details below
+                                Fill all sections for accurate prediction
                             </small>
                         </div>
                     </div>
                 </div>
+
                 <div class="p-4">
                     <form action="/predict/diabetes" method="POST"
                           onsubmit="showLoader()">
 
-                        <!-- Hidden defaults for non-critical fields -->
-                        <input type="hidden" name="CholCheck" value="1">
-                        <input type="hidden" name="Fruits" value="1">
-                        <input type="hidden" name="Veggies" value="1">
-                        <input type="hidden" name="AnyHealthcare" value="1">
-                        <input type="hidden" name="NoDocbcCost" value="0">
-                        <input type="hidden" name="MentHlth" value="0">
-                        <input type="hidden" name="Education" value="4">
-                        <input type="hidden" name="Income" value="5">
-
+                        <!-- SECTION 1 — PERSONAL INFO -->
+                        <div class="section-label mb-3">
+                            <i class="fas fa-user me-1"></i>
+                            Personal Information
+                        </div>
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Age Group</label>
-                                <select name="Age"
-                                        class="form-select" required>
-                                    <option value="">Select Age Range</option>
-                                    <option value="1">18–24 years</option>
-                                    <option value="2">25–29 years</option>
-                                    <option value="3">30–34 years</option>
-                                    <option value="4">35–39 years</option>
-                                    <option value="5">40–44 years</option>
-                                    <option value="6">45–49 years</option>
-                                    <option value="7">50–54 years</option>
-                                    <option value="8">55–59 years</option>
-                                    <option value="9">60–64 years</option>
-                                    <option value="10">65–69 years</option>
-                                    <option value="11">70–74 years</option>
-                                    <option value="12">75–79 years</option>
-                                    <option value="13">80+ years</option>
-                                </select>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Full Name (Optional)
+                                </label>
+                                <input type="text"
+                                       name="patient_name"
+                                       class="form-control"
+                                       placeholder="Enter your name">
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Gender</label>
-                                <select name="Sex"
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Age (years)
+                                </label>
+                                <input type="number" name="age"
+                                       class="form-control"
+                                       placeholder="e.g. 45"
+                                       min="1" max="100" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Gender
+                                </label>
+                                <select name="gender"
                                         class="form-select" required>
                                     <option value="">Select</option>
-                                    <option value="0">Female</option>
-                                    <option value="1">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Male">Male</option>
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">
-                                    BMI
-                                    <small class="text-muted">
-                                        (Weight in kg / Height² in m)
-                                    </small>
+                                    Height (cm)
+                                </label>
+                                <input type="number" name="height"
+                                       class="form-control"
+                                       placeholder="e.g. 170"
+                                       oninput="calcDiabetesBMI()">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Weight (kg)
                                 </label>
                                 <input type="number" step="0.1"
-                                       name="BMI" class="form-control"
-                                       placeholder="e.g. 25.5"
-                                       min="10" max="70" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">
-                                    General Health
-                                </label>
-                                <select name="GenHlth"
-                                        class="form-select" required>
-                                    <option value="">Select</option>
-                                    <option value="1">Excellent</option>
-                                    <option value="2">Very Good</option>
-                                    <option value="3">Good</option>
-                                    <option value="4">Fair</option>
-                                    <option value="5">Poor</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">
-                                    High Blood Pressure?
-                                </label>
-                                <select name="HighBP"
-                                        class="form-select" required>
-                                    <option value="">Select</option>
-                                    <option value="0">No</option>
-                                    <option value="1">Yes</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">
-                                    High Cholesterol?
-                                </label>
-                                <select name="HighChol"
-                                        class="form-select" required>
-                                    <option value="">Select</option>
-                                    <option value="0">No</option>
-                                    <option value="1">Yes</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">
-                                    Do you Smoke?
-                                </label>
-                                <select name="Smoker"
-                                        class="form-select" required>
-                                    <option value="">Select</option>
-                                    <option value="0">No</option>
-                                    <option value="1">Yes</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">
-                                    History of Stroke?
-                                </label>
-                                <select name="Stroke"
-                                        class="form-select" required>
-                                    <option value="">Select</option>
-                                    <option value="0">No</option>
-                                    <option value="1">Yes</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">
-                                    Heart Disease History?
-                                </label>
-                                <select name="HeartDiseaseorAttack"
-                                        class="form-select" required>
-                                    <option value="">Select</option>
-                                    <option value="0">No</option>
-                                    <option value="1">Yes</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">
-                                    Physically Active?
-                                </label>
-                                <select name="PhysActivity"
-                                        class="form-select" required>
-                                    <option value="">Select</option>
-                                    <option value="1">Yes</option>
-                                    <option value="0">No</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">
-                                    Heavy Alcohol Drinker?
-                                </label>
-                                <select name="HvyAlcoholConsump"
-                                        class="form-select" required>
-                                    <option value="">Select</option>
-                                    <option value="0">No</option>
-                                    <option value="1">Yes</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">
-                                    Difficulty Walking?
-                                </label>
-                                <select name="DiffWalk"
-                                        class="form-select" required>
-                                    <option value="">Select</option>
-                                    <option value="0">No</option>
-                                    <option value="1">Yes</option>
-                                </select>
+                                       name="weight"
+                                       class="form-control"
+                                       placeholder="e.g. 70"
+                                       oninput="calcDiabetesBMI()">
                             </div>
                             <div class="col-md-12 mb-3">
-                                <label class="form-label">
-                                    Physical Health Issues
-                                    <small class="text-muted">
-                                        (Days in last 30 days feeling unwell)
-                                    </small>
-                                </label>
-                                <input type="number" name="PhysHlth"
-                                       class="form-control"
-                                       min="0" max="30"
-                                       placeholder="0 = No issues, 30 = All days"
-                                       required>
+                                <div class="p-2 rounded"
+                                     style="background:#f0f9ff;
+                                     border:1px solid #bae6fd;">
+                                    <span id="bmi_diabetes"
+                                          class="fw-bold text-info">
+                                        BMI: will be calculated automatically
+                                    </span>
+                                    <input type="hidden" name="bmi"
+                                           id="bmi_value" value="25">
+                                </div>
                             </div>
                         </div>
 
-                        <div class="alert alert-info py-2"
-                             style="font-size:0.85rem;border-radius:10px;">
+                        <!-- SECTION 2 — LIFESTYLE -->
+                        <div class="section-label mb-3 mt-2">
+                            <i class="fas fa-running me-1"></i>
+                            Lifestyle Information
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Smoking History
+                                </label>
+                                <select name="smoking_history"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="never">
+                                        Never Smoked
+                                    </option>
+                                    <option value="former">
+                                        Former Smoker
+                                    </option>
+                                    <option value="current">
+                                        Current Smoker
+                                    </option>
+                                    <option value="No Info">
+                                        Prefer Not to Say
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Exercise Minutes per Week
+                                    <small class="text-muted">
+                                        (150+ = Active)
+                                    </small>
+                                </label>
+                                <input type="number"
+                                       name="exercise_mins"
+                                       class="form-control"
+                                       placeholder="e.g. 0, 150, 300"
+                                       min="0" value="0">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Alcohol Units per Week
+                                    <small class="text-muted">
+                                        (0 = None)
+                                    </small>
+                                </label>
+                                <input type="number"
+                                       name="alcohol_units"
+                                       class="form-control"
+                                       placeholder="e.g. 0, 5, 14"
+                                       min="0" value="0">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Diet Type
+                                </label>
+                                <select name="diet_type"
+                                        class="form-select">
+                                    <option value="balanced">
+                                        Balanced Diet
+                                    </option>
+                                    <option value="high_sugar">
+                                        High Sugar / Junk Food
+                                    </option>
+                                    <option value="vegetarian">
+                                        Vegetarian
+                                    </option>
+                                    <option value="low_carb">
+                                        Low Carb Diet
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 3 — MEDICAL HISTORY -->
+                        <div class="section-label mb-3 mt-2">
+                            <i class="fas fa-notes-medical me-1"></i>
+                            Medical History
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Do you have Hypertension?
+                                </label>
+                                <select name="hypertension"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="0">No</option>
+                                    <option value="1">Yes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Do you have Heart Disease?
+                                </label>
+                                <select name="heart_disease"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="0">No</option>
+                                    <option value="1">Yes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Family History of Diabetes?
+                                </label>
+                                <select name="family_diabetes"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Previously Diagnosed with Diabetes?
+                                </label>
+                                <select name="prev_diabetes"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Currently on Medications?
+                                </label>
+                                <select name="on_medications"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 4 — SYMPTOMS -->
+                        <div class="section-label mb-3 mt-2">
+                            <i class="fas fa-stethoscope me-1"></i>
+                            Current Symptoms
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Frequent Urination?
+                                </label>
+                                <select name="frequent_urination"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Excessive Thirst?
+                                </label>
+                                <select name="excessive_thirst"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Blurred Vision?
+                                </label>
+                                <select name="blurred_vision"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Slow Healing Wounds?
+                                </label>
+                                <select name="slow_healing"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Unexplained Weight Loss?
+                                </label>
+                                <select name="weight_loss"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">
+                                    Tingling in Hands/Feet?
+                                </label>
+                                <select name="tingling"
+                                        class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 5 — LAB REPORTS -->
+                        <div class="section-label mb-3 mt-2">
+                            <i class="fas fa-flask me-1"></i>
+                            Lab Report Values
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    HbA1c Level (%)
+                                    <small class="text-muted">
+                                        Normal below 5.7%,
+                                        Diabetic above 6.5%
+                                    </small>
+                                </label>
+                                <input type="number" step="0.1"
+                                       name="HbA1c_level"
+                                       class="form-control"
+                                       placeholder="e.g. 5.5, 6.5, 8.0"
+                                       min="3" max="15" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Blood Glucose Level (mg/dL)
+                                    <small class="text-muted">
+                                        Fasting Normal: below 100
+                                    </small>
+                                </label>
+                                <input type="number"
+                                       name="blood_glucose_level"
+                                       class="form-control"
+                                       placeholder="e.g. 85, 140, 200"
+                                       min="50" max="400" required>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info py-2 mt-2"
+                             style="font-size:0.85rem;
+                             border-radius:10px;">
                             <i class="fas fa-info-circle me-2"></i>
-                            This uses your BMI, blood pressure,
-                            lifestyle and health history for prediction.
+                            HbA1c and blood glucose are the most
+                            important values for diabetes prediction.
+                            Get these from your latest blood test report.
                         </div>
 
                         <div class="text-center mt-3">
                             <button type="submit"
                                     class="btn btn-warning btn-lg px-5">
                                 <i class="fas fa-search me-2"></i>
-                                Predict Now
+                                Predict Diabetes Risk
                             </button>
                         </div>
                     </form>
@@ -216,4 +367,21 @@
         </div>
     </div>
 </div>
+
+{% block extra_js %}
+<script>
+function calcDiabetesBMI() {
+    const h = parseFloat(
+        document.querySelector('[name=height]').value);
+    const w = parseFloat(
+        document.querySelector('[name=weight]').value);
+    if (h && w) {
+        const bmi = (w / ((h/100) ** 2)).toFixed(1);
+        document.getElementById('bmi_diabetes').textContent =
+            'BMI: ' + bmi + ' (auto calculated)';
+        document.getElementById('bmi_value').value = bmi;
+    }
+}
+</script>
+{% endblock %}
 {% endblock %}
